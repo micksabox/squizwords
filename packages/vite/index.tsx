@@ -17,10 +17,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { defineChain, createClient } from 'viem';
 import { injected } from 'wagmi/connectors';
-import { networkConfig } from '../../deployment.json';
+import networkConfig from '../../deployment.json' assert { type: 'json' };
 
 const queryClient = new QueryClient();
 
+// @ts-ignore
 const { id, name, nativeCurrency, rpcUrls } = networkConfig;
 const chain = defineChain({
   id,

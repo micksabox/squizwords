@@ -1,6 +1,6 @@
 import { defineConfig } from '@wagmi/cli';
 import { react, hardhat } from '@wagmi/cli/plugins';
-import deployment from '../../deployment.json';
+import deployment from '../../deployment.json' assert { type: 'json' };
 
 export default defineConfig({
   out: 'artifacts/generated.ts',
