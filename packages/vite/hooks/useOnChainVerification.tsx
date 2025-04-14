@@ -5,7 +5,7 @@ import { bytesToHex } from 'viem';
 import { useEffect, useState } from 'react';
 import { Id, toast } from 'react-toastify';
 import { useReadUltraVerifierVerify } from '../artifacts/generated.js';
-import deployment from '../../../deployment.json';
+import deployment from '../../../deployment.json' assert { type: 'json' };
 
 export function useOnChainVerification(proofData?: ProofData) {
   const { connect, connectors } = useConnect();
