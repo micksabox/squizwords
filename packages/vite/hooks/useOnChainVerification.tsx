@@ -56,6 +56,7 @@ export function useOnChainVerification(proofData?: ProofData) {
     return (
       <div style={{ padding: '20px 0' }}>
         <button
+          className="bg-blue-500 text-white p-2 rounded-md"
           key={connectors[0].uid}
           onClick={() =>
             connect({ connector: connectors[0], chainId: deployment.networkConfig.id })

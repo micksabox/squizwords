@@ -25,12 +25,12 @@ function Component() {
   return (
     <>
       <form className="container" onSubmit={submit}>
-        <h1>Example starter</h1>
-        <h2>This circuit checks that x and y are different (yey!)</h2>
+        <h1 className="text-2xl font-bold"  >Example starter</h1>
+        <h2 className="text-lg">This circuit checks that x and y are different (yey!)</h2>
         <p>Try it!</p>
-        <input name="x" type="text" />
-        <input name="y" type="text" />
-        <button type="submit">Calculate proof</button>
+        <input name="x" type="text" className="border-2 border-gray-300 rounded-md p-2" />
+        <input name="y" type="text" className="border-2 border-gray-300 rounded-md p-2" />
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Calculate proof</button>
       </form>
       {verifyButton}
     </>
