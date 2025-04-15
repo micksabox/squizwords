@@ -21,13 +21,8 @@ import networkConfig from '../../deployment.json' assert { type: 'json' };
 
 const queryClient = new QueryClient();
 
-// @ts-ignore
-const { id, name, nativeCurrency, rpcUrls } = networkConfig;
 const chain = defineChain({
-  id,
-  name,
-  nativeCurrency,
-  rpcUrls,
+  ...networkConfig.networkConfig,
 });
 
 const config = createConfig({
