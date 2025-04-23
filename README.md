@@ -88,3 +88,8 @@ Feel free to add more networks, as long as they're supported by `wagmi`
 - Have funds in these accounts
 - Add their configuration in the `networks` property in `hardhat.config.cts`
 - Use the name that wagmi expects (for example `ethereum` won't work, as `wagmi` calls it `mainnet`)
+
+
+
+Note: Support for path mappings
+https://hardhat.org/hardhat-runner/docs/guides/typescript#support-for-path-mappings
