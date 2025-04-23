@@ -1,5 +1,5 @@
 [package]
-name = "noirstarter"
+name = "wordwiz"
 type = "bin"
 
 [dependencies]
