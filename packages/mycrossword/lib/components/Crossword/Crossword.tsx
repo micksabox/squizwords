@@ -44,10 +44,10 @@ interface CrosswordProps {
   disableAnagram?: boolean;
   disableLetterChecks?: boolean;
   disableGridChecks?: boolean;
-  checkClueHash?: (
+  checkClueHash: (
     clueId: string,
     currentGuess: string,
-    solutionHash?: string | null,
+    solutionHash: string,
   ) => boolean;
 }
 

@@ -33,6 +33,12 @@ export interface MyCrosswordProps {
   saveGrid?: (value: GuessGrid | ((val: GuessGrid) => GuessGrid)) => void;
   stickyClue?: 'always' | 'never' | 'auto';
   theme?: Theme;
+  onClueHashCheckResult?: (clueId: string, isValid: boolean) => void;
+  checkClueHash: (clueId: string, guess: string, hashedSolution: string) => boolean;
+  disableAllReveals?: boolean;
+  disableAnagram?: boolean;
+  disableLetterChecks?: boolean;
+  disableGridChecks?: boolean;
 }
 
 export default function MyCrossword({
@@ -49,6 +55,12 @@ export default function MyCrossword({
   saveGrid,
   stickyClue = 'auto',
   theme = 'blue',
+  onClueHashCheckResult,
+  checkClueHash,
+  disableAllReveals = false,
+  disableAnagram = false,
+  disableLetterChecks = false,
+  disableGridChecks = false,
 }: MyCrosswordProps) {
   const bem = getBem('MyCrossword');
 
@@ -71,6 +83,12 @@ export default function MyCrossword({
         onComplete={onComplete}
         saveGrid={saveGrid}
         stickyClue={stickyClue}
+        onClueHashCheckResult={onClueHashCheckResult}
+        checkClueHash={checkClueHash}
+        disableAllReveals={disableAllReveals}
+        disableAnagram={disableAnagram}
+        disableLetterChecks={disableLetterChecks}
+        disableGridChecks={disableGridChecks}
       />
     </div>
   );

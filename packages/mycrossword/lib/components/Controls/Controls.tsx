@@ -38,14 +38,11 @@ export default function Controls({
   clues,
   gridCols,
   gridRows,
-  onAnagramHelperClick,
   onCellChange,
   onComplete,
   setGuessGrid,
   solutionsAvailable,
-  // selectedClueHasHash,
   onCheckClueHash,
-  disableAnagram = false,
   disableGridChecks = false,
 }: ControlsProps) {
   const bem = getBem('Controls');
@@ -293,9 +290,6 @@ export default function Controls({
   return (
     <div className={bem('Controls')}>
       <div className={bem('Controls__buttons')}>
-        <Button disabled={disableAnagram} onClick={onAnagramHelperClick}>
-          Anagram helper
-        </Button>
         {solutionsAvailable && <DropdownButton menu={checkMenu} text="Check" />}
         <Button onClick={onCheckClueHash}>Check clue hash</Button>
       </div>
