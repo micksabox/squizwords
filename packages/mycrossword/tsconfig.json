@@ -10,7 +10,7 @@
     },
     "outDir": "./dist",
     "declaration": true,
-    "types": ["@testing-library/jest-dom"],
+    "types": [],
     "esModuleInterop": true,
 
     /* Bundler mode */
