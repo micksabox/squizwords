@@ -38,6 +38,7 @@ interface CrosswordProps {
   onCellFocus?: (cellFocus: CellFocus) => void;
   onComplete?: () => void;
   saveGrid?: (value: GuessGrid | ((val: GuessGrid) => GuessGrid)) => void;
+  onGridChange?: (grid: GuessGrid) => void;
   stickyClue: 'always' | 'never' | 'auto';
   onClueHashCheckResult?: (clueId: string, isValid: boolean) => void;
   disableAllReveals?: boolean;
@@ -62,6 +63,7 @@ export default function Crossword({
   onCellFocus,
   onComplete,
   saveGrid,
+  onGridChange,
   stickyClue,
   onClueHashCheckResult,
   disableAllReveals = false,
@@ -75,6 +77,7 @@ export default function Crossword({
     `crosswords.${id}`,
     initialiseGuessGrid(data.dimensions.cols, data.dimensions.rows),
   );
+
   const [locationHash] = useLocationHash();
 
   const storeClues = useCluesStore((store) => store.clues);
@@ -301,6 +304,24 @@ export default function Crossword({
     // TODO: Optionally provide user feedback based on `isValid`
   };
 
+  // Determine the actual function to save the grid state
+  const actualSaveGrid = saveGrid ?? setGuessGrid;
+
+  // Create a wrapper function to handle saving and the callback
+  const handleSetGrid = React.useCallback(
+    (value: GuessGrid | ((val: GuessGrid) => GuessGrid)) => {
+      // Determine the next grid state
+      const nextGrid = typeof value === 'function' ? value(guessGrid) : value;
+      // Call the original save function
+      actualSaveGrid(nextGrid);
+      // Call the new callback if provided
+      if (onGridChange) {
+        onGridChange(nextGrid);
+      }
+    },
+    [actualSaveGrid, onGridChange, guessGrid], // Include guessGrid in dependencies if value is a function
+  );
+
   return (
     <div className={bem('Crossword')}>
       <div className={bem('Crossword__gridAndControls')}>
@@ -353,7 +374,7 @@ export default function Crossword({
                 onComplete={onComplete}
                 rawClues={data.entries}
                 rows={data.dimensions.rows}
-                setGuessGrid={saveGrid ?? setGuessGrid}
+                setGuessGrid={handleSetGrid}
               />
             </>
           )}
@@ -367,7 +388,7 @@ export default function Crossword({
           onCellChange={onCellChange}
           onComplete={onComplete}
           onCheckClueHash={handleCheckSelectedClueHash}
-          setGuessGrid={saveGrid ?? setGuessGrid}
+          setGuessGrid={handleSetGrid}
           solutionsAvailable={data.solutionAvailable}
           selectedClueHasHash={!!selectedClue?.solutionPoseidonHash}
           disableAllReveals={disableAllReveals}

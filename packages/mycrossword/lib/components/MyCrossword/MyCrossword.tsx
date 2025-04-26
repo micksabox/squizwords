@@ -31,6 +31,7 @@ export interface MyCrosswordProps {
   onCellFocus?: (cellFocus: CellFocus) => void;
   onComplete?: () => void;
   saveGrid?: (value: GuessGrid | ((val: GuessGrid) => GuessGrid)) => void;
+  onGridChange?: (grid: GuessGrid) => void;
   stickyClue?: 'always' | 'never' | 'auto';
   theme?: Theme;
   onClueHashCheckResult?: (clueId: string, isValid: boolean) => void;
@@ -53,6 +54,7 @@ export default function MyCrossword({
   onCellFocus,
   onComplete,
   saveGrid,
+  onGridChange,
   stickyClue = 'auto',
   theme = 'blue',
   onClueHashCheckResult,
@@ -82,6 +84,7 @@ export default function MyCrossword({
         onCellFocus={onCellFocus}
         onComplete={onComplete}
         saveGrid={saveGrid}
+        onGridChange={onGridChange}
         stickyClue={stickyClue}
         onClueHashCheckResult={onClueHashCheckResult}
         checkClueHash={checkClueHash}
