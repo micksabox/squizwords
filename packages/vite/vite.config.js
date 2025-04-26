@@ -8,5 +8,6 @@ export default defineConfig({
       target: 'esnext',
     },
   },
+  publicDir: 'public',
   plugins: [react(), tailwindcss()],
 });
