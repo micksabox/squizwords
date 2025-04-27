@@ -1,5 +1,5 @@
 [package]
-name = "wordwiz"
+name = "squizword"
 type = "bin"
 
 [dependencies]

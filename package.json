@@ -19,10 +19,10 @@
     "hardhat": "2.23.0"
   },
   "dependencies": {
-    "@aztec/bb.js": "0.63.1",
-    "@noir-lang/noir_js": "1.0.0-beta.0",
-    "@noir-lang/noir_wasm": "1.0.0-beta.0",
-    "@noir-lang/types": "1.0.0-beta.0",
+    "@aztec/bb.js": "0.86.0",
+    "@noir-lang/noir_js": "1.0.0-beta.3",
+    "@noir-lang/noir_wasm": "1.0.0-beta.3",
+    "@noir-lang/types": "1.0.0-beta.3",
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@nomicfoundation/hardhat-ignition": "^0.15.5",
     "@nomicfoundation/hardhat-ignition-viem": "^0.15.5",

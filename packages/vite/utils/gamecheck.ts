@@ -1,23 +1,7 @@
 import { GuardianCrossword, GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses } from './gamegrid.js';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
-
-// Helper function to encode string to bigint (hex representation of UTF-8 bytes)
-// Exported for potential reuse or testing
-export function encodeStringToField(str: string): bigint {
-  if (str.length === 0) {
-    return 0n;
-  }
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(str);
-  let hexString = '0x';
-  bytes.forEach(byte => {
-    hexString += byte.toString(16).padStart(2, '0');
-  });
-   if (hexString === '0x') return 0n;
-  // TODO: Consider potential field size limits
-  return BigInt(hexString);
-}
+import { stringToHex } from 'viem';
 
 // Constant matching the Noir circuit
 // Exported for potential reuse or testing
@@ -61,7 +45,7 @@ export const calculateSortedGuessesHash = (
   const sortedGuesses = cluesWithDetails.map(c => c.guess);
 
   // 6. Encode each guess string to a bigint Field element
-  const encodedFields = sortedGuesses.map(encodeStringToField);
+  const encodedFields = sortedGuesses.map(guess => BigInt(stringToHex(guess)));
 
   // 7. Create the padded array matching the circuit input size
   const paddedFields = Array(MAX_SOLUTION_WORDS).fill(0n);
@@ -83,8 +67,8 @@ export const calculateSortedGuessesHash = (
  * @returns The padded array of encoded guesses
  */
 export function prepareHashInput(guesses: string[]): bigint[] {
-  const encodedFields = guesses.map(encodeStringToField);
-  const paddedFields = Array(MAX_SOLUTION_WORDS).fill(0n);
+  const encodedFields = guesses.map(guess => stringToHex(guess));
+  const paddedFields = Array(MAX_SOLUTION_WORDS).fill("0");
   // Copy encoded fields into the beginning of the padded array
   for (let i = 0; i < encodedFields.length && i < MAX_SOLUTION_WORDS; i++) {
       paddedFields[i] = encodedFields[i];
