@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import { GuardianCrossword, GuessGrid, Char } from '../../mycrossword/lib/types.js';
-import { calculateSortedGuessesHash } from './gamecheck.js';
+import { calculateSortedGuessesHash, prepareHashInput } from './gamecheck.js';
 import { getGameClueGuesses } from './gamegrid.js';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 
@@ -65,6 +65,7 @@ let emptyGrid: GuessGrid;
 let partialGrid: GuessGrid;
 let mockGameDataWithSymbolsFixed: GuardianCrossword;
 let mockGridWithSymbolsFixed: GuessGrid;
+
 
 // --- Main Test Suite ---
 describe('calculateSortedGuessesHash', () => {
@@ -136,12 +137,9 @@ describe('calculateSortedGuessesHash', () => {
 
   it('should calculate the correct hash for a fully and correctly guessed grid', () => {
     // Uses simpleGameData and simpleSolvedGrid defined above
-    const expectedConcatenated = "ADEABC"; // Expected sorted guesses: 1-down ("ADE"), 1-across ("ABC")
-    const expectedFields: bigint[] = [];
-    for (let i = 0; i < expectedConcatenated.length; i++) {
-      expectedFields.push(BigInt(expectedConcatenated.charCodeAt(i)));
-    }
-    const expectedHash = poseidon2Hash(expectedFields);
+    const expectedSortedGuesses = ["ADE", "ABC"]; // From previous logic: 1-down, 1-across
+    const expectedPaddedInput = prepareHashInput(expectedSortedGuesses);
+    const expectedHash = poseidon2Hash(expectedPaddedInput);
 
     const actualHash = calculateSortedGuessesHash(simpleGameData, simpleSolvedGrid);
     expect(actualHash).toEqual(expectedHash);
@@ -149,13 +147,10 @@ describe('calculateSortedGuessesHash', () => {
 
   it('should handle partially filled or incorrectly guessed grids', () => {
     // Uses simpleGameData and simplePartialGrid defined above
-    // Expected sorted guesses: 1-down ("AD "), 1-across ("AXC")
-    const expectedConcatenated = "AD AXC";
-    const expectedFields: bigint[] = [];
-    for (let i = 0; i < expectedConcatenated.length; i++) {
-      expectedFields.push(BigInt(expectedConcatenated.charCodeAt(i)));
-    }
-    const expectedHash = poseidon2Hash(expectedFields);
+    // Test expectation: 1-down reads "AD", 1-across reads "AXC" (Removing space assumption)
+    const expectedSortedGuesses = ["AD ", "AXC"]; // Test with space missing
+    const expectedPaddedInput = prepareHashInput(expectedSortedGuesses);
+    const expectedHash = poseidon2Hash(expectedPaddedInput);
 
     const actualHash = calculateSortedGuessesHash(simpleGameData, simplePartialGrid);
     expect(actualHash).toEqual(expectedHash);
@@ -163,13 +158,10 @@ describe('calculateSortedGuessesHash', () => {
 
   it('should handle empty guesses correctly', () => {
     // Uses simpleGameData and emptyGrid defined above
-    // Expected sorted guesses: 1-down ("   "), 1-across ("   ") -> "      "
-    const expectedConcatenated = "      ";
-    const expectedFields: bigint[] = [];
-    for (let i = 0; i < expectedConcatenated.length; i++) {
-      expectedFields.push(BigInt(expectedConcatenated.charCodeAt(i)));
-    }
-    const expectedHash = poseidon2Hash(expectedFields);
+    // 1-down reads "   ", 1-across reads "   "
+    const expectedSortedGuesses = ["   ", "   "]; // Sorted: 1-down, 1-across (Corrected from ["", "", ""])
+    const expectedPaddedInput = prepareHashInput(expectedSortedGuesses);
+    const expectedHash = poseidon2Hash(expectedPaddedInput);
 
     const actualHash = calculateSortedGuessesHash(simpleGameData, emptyGrid);
     expect(actualHash).toEqual(expectedHash);
@@ -178,12 +170,9 @@ describe('calculateSortedGuessesHash', () => {
     it('should handle grids with only some clues guessed', () => {
     // Uses simpleGameData and partialGrid defined above
     // Expected sorted guesses: 1-down ("ADE"), 1-across ("A  ") -> "ADEA  "
-    const expectedConcatenated = "ADEA  ";
-    const expectedFields: bigint[] = [];
-    for (let i = 0; i < expectedConcatenated.length; i++) {
-      expectedFields.push(BigInt(expectedConcatenated.charCodeAt(i)));
-    }
-    const expectedHash = poseidon2Hash(expectedFields);
+    const expectedSortedGuesses = ["ADE", "A  "];
+    const expectedPaddedInput = prepareHashInput(expectedSortedGuesses);
+    const expectedHash = poseidon2Hash(expectedPaddedInput);
 
     const actualHash = calculateSortedGuessesHash(simpleGameData, partialGrid);
     expect(actualHash).toEqual(expectedHash);
@@ -192,20 +181,12 @@ describe('calculateSortedGuessesHash', () => {
     it('should handle different character sets (e.g., numbers, symbols if allowed)', () => {
     // Uses mockGameDataWithSymbolsFixed and mockGridWithSymbolsFixed defined above
     // Expected sorted guesses: 1-down ("A0B"), 1-across ("N1") -> "A0BN1"
-    const expectedConcatenated = "A0BN1"; // Revised expectation (was "A0BN ")
-    const expectedFields: bigint[] = [];
-    for (let i = 0; i < expectedConcatenated.length; i++) {
-      expectedFields.push(BigInt(expectedConcatenated.charCodeAt(i)));
-    }
-    const expectedHash = poseidon2Hash(expectedFields);
+    const expectedSortedGuesses = ["A0B", "N1"];
+    const expectedPaddedInput = prepareHashInput(expectedSortedGuesses);
+    const expectedHash = poseidon2Hash(expectedPaddedInput);
 
     const actualHash = calculateSortedGuessesHash(mockGameDataWithSymbolsFixed, mockGridWithSymbolsFixed);
     expect(actualHash).toEqual(expectedHash);
   });
 
-  // Note: Removed the original mockGameData and mockGrid definitions as they were complex and replaced by simpler/fixed versions.
 });
-
-// We also need tests for getGameClueGuesses itself, but that's separate
-// Need to ensure types GuardianCrossword and GuessGrid are correctly imported/defined
-// Need poseidon2Hash imported/available in the test environment
