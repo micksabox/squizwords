@@ -4,7 +4,7 @@ import { calculateSortedGuessesHash, MAX_SOLUTION_WORDS, prepareHashInput } from
 import { getGameClueGuesses } from './gamegrid.js';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 import { encodeStringToField } from './encoding.js';
-import { getCircuitForTest } from '../../noir/compile.js';
+import { getCircuitForTest } from '../../noir/compile.node.js';
 import { UltraPlonkBackend } from '@aztec/bb.js';
 import { InputMap, Noir } from '@noir-lang/noir_js';
 import { InputValue, ProofData } from '@noir-lang/types';
