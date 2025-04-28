@@ -4,7 +4,7 @@ import { type GuardianCrossword, MyCrossword } from 'mycrossword';
 import 'mycrossword/style.css';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 
-import { useOnChainVerification } from '../hooks/useOnChainVerification.js';
+// import { useOnChainVerification } from '../hooks/useOnChainVerification.js';
 import { useProofGeneration } from '../hooks/useProofGeneration.js';
 import { useOffChainVerification } from '../hooks/useOffChainVerification.js';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
@@ -14,18 +14,18 @@ function Component() {
   const [input, setInput] = useState<{ word: string; solutionHash: string } | undefined>();
   const { noir, proofData, backend } = useProofGeneration(input);
   useOffChainVerification(backend!, noir, proofData);
-  const verifyButton = useOnChainVerification(proofData);
+  // const verifyButton = useOnChainVerification(proofData);
 
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const elements = e.currentTarget.elements;
-    if (!elements) return;
+  // const submit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const elements = e.currentTarget.elements;
+  //   if (!elements) return;
 
-    const word = elements.namedItem('word') as HTMLInputElement;
-    const solutionHash = elements.namedItem('solutionHash') as HTMLInputElement;
+  //   const word = elements.namedItem('word') as HTMLInputElement;
+  //   const solutionHash = elements.namedItem('solutionHash') as HTMLInputElement;
 
-    setInput({ word: word.value, solutionHash: solutionHash.value });
-  };
+  //   setInput({ word: word.value, solutionHash: solutionHash.value });
+  // };
 
   const data: GuardianCrossword = {
     id: 'simple/1',
@@ -114,24 +114,12 @@ function Component() {
 
   return (
     <>
-      <div className="flex items-center bg-black py-2 px-4">
-        <h1 className="text-5xl micro-5-regular text-white font-bold">SQUIZWORD</h1>
-        <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" />
+      <div className="flex items-center bg-black py-2 px-4 justify-center">
+        <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 mr-2 h-12 -scale-x-100" />
+        <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
+        <img src="/crosswor d_squid_template_7.png" alt="squizword" className="w-12 h-12" />
       </div>
-      <form className="container" onSubmit={submit}>
-        <p>Try it!</p>
-        <input name="word" type="text" className="border-2 border-gray-300 rounded-md p-2" />
-        <input
-          name="solutionHash"
-          type="text"
-          className="border-2 border-gray-300 rounded-md p-2"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">
-          Calculate proof
-        </button>
-      </form>
-      {verifyButton}
-      <div>
+      <div className='max-w-screen-lg mx-auto py-6'>
         <MyCrossword
           onGridChange={(grid: GuessGrid) => {
             const guessGrid = getGameClueGuesses(data, grid);
