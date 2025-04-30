@@ -12,7 +12,7 @@ import ReactDOM from 'react-dom/client';
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import Component from './components/index.jsx';
+import Component from './components/Squizword.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { defineChain, createClient } from 'viem';

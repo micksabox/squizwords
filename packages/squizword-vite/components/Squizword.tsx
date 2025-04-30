@@ -5,8 +5,8 @@ import 'mycrossword/style.css';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 
 // import { useOnChainVerification } from '../hooks/useOnChainVerification.js';
-import { useProofGeneration } from '../hooks/useProofGeneration.js';
-import { useOffChainVerification } from '../hooks/useOffChainVerification.js';
+import { useProofGeneration } from '../hooks/useProofGeneration.jsx';
+import { useOffChainVerification } from '../hooks/useOffChainVerification.jsx';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses } from '../utils/gamegrid.js';
 
