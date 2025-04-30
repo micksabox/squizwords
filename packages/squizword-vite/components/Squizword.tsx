@@ -9,6 +9,7 @@ import { useProofGeneration } from '../hooks/useProofGeneration.jsx';
 import { useOffChainVerification } from '../hooks/useOffChainVerification.jsx';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses } from '../utils/gamegrid.js';
+import { toast } from 'react-toastify';
 
 function Component() {
   const [input, setInput] = useState<{ word: string; solutionHash: string } | undefined>();
@@ -106,20 +107,65 @@ function Component() {
     solutionAvailable: false,
     dateSolutionAvailable: 1542326400000,
     dimensions: {
-      cols: 13,
-      rows: 13,
+      cols: 8,
+      rows: 8,
     },
     crosswordType: 'quick',
   };
 
   return (
     <>
-      <div className="flex items-center bg-black py-2 px-4 justify-center">
+      <div className='text-center text-sm bg-black text-white pt-2'>
+        <a href="https://www.noirhack.com" className="hover:underline">NoirHack 2025 {/*Winner 🏆*/}</a>
+      </div>
+      <div className="flex items-center bg-black justify-center">
         <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 mr-2 h-12 -scale-x-100" />
         <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
         <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" />
       </div>
+      
+        {/* <p className='text-lg text-center'>Daily Puzzle {new Date().toLocaleDateString()}</p> */}
       <div className='max-w-screen-lg mx-auto py-6'>
+        <div className="grid grid-cols-2 gap-4">
+          <div id="solution-hint" className='text-center mb-4'>
+            <p className='text-2xl'>
+              Solve puzzle!
+            </p>
+          </div>
+          <button disabled={false} className='bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 mx-auto block text-white px-4 py-2 rounded-md' onClick={() => {
+            console.log('clicked');
+            toast.success('Solution verified');
+          }}>
+            VERIFY
+          </button>
+          <div id="solution-hint" className='text-center mb-4'>
+            <p className='text-2xl'>
+              Having trouble?
+            </p>
+          </div>
+          <button disabled={false} className='bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 mx-auto block text-white px-4 py-2 rounded-md' onClick={() => {
+
+            // const link = TBD
+
+            if (navigator.share) {
+              navigator.share({
+                title: 'Squizwords Puzzle',
+                text: 'Check out this crossword puzzle!',
+                url: window.location.href
+              }).catch((error) => {
+                console.error('Error sharing:', error);
+                toast.error('Error sharing');
+              }).then(() => toast.success('Shared with friend'));
+            } else {
+              // Fallback for browsers that don't support sharing
+              navigator.clipboard.writeText(window.location.href)
+                .then(() => toast.success('Link copied to clipboard!'))
+                .catch(console.error);
+            }
+          }}>
+            ASK A FRIEND
+          </button>
+        </div>
         <MyCrossword
           onGridChange={(grid: GuessGrid) => {
             const guessGrid = getGameClueGuesses(data, grid);
