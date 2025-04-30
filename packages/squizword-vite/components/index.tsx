@@ -117,7 +117,7 @@ function Component() {
       <div className="flex items-center bg-black py-2 px-4 justify-center">
         <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 mr-2 h-12 -scale-x-100" />
         <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
-        <img src="/crosswor d_squid_template_7.png" alt="squizword" className="w-12 h-12" />
+        <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" />
       </div>
       <div className='max-w-screen-lg mx-auto py-6'>
         <MyCrossword
