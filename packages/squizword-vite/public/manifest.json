@@ -1,6 +1,6 @@
 {
-  "name": "squizword",
-  "short_name": "squizword",
+  "name": "squizwords",
+  "short_name": "squizwords",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

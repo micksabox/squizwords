@@ -4,5 +4,11 @@
   "main": "./worker/index.ts",
   "assets": {
     "not_found_handling": "single-page-application"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "squizwords.com",
+      "custom_domain": true
+    }
+  ]
 }
