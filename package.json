@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "deploy": "bunx hardhat deploy",
-    "dev": "bun --filter vite dev",
+    "dev": "bun --filter squizword-vite dev",
     "test:up": "bun test ./tests/up.test.ts",
     "test:uh": "bun test ./tests/uh.test.ts",
     "test": "bun test:up && bun test:uh",
@@ -15,6 +15,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250428.0",
     "@types/bun": "^1.1.12",
     "hardhat": "2.23.0"
   },

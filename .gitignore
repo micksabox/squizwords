@@ -62,3 +62,7 @@ bun.lockb
 
 
 docs/todo.md
+
+# Cloudflare
+.wrangler
+.dev.vars*

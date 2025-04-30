@@ -25,5 +25,11 @@
   },
   "exclude": ["dist", "node_modules"],
   "include": ["packages", "./tests"],
-  "files": ["hardhat.config.cts"]
+  "files": ["hardhat.config.cts"],
+  "references": [
+    // Assuming you have other tsconfig files for different parts (e.g., app, node)
+    // { "path": "./tsconfig.app.json" }, 
+    { "path": "./packages/squizword-vite/tsconfig.node.json" },
+    { "path": "./packages/squizword-vite/tsconfig.worker.json" }
+  ]
 }
