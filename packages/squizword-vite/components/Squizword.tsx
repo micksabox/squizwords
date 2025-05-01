@@ -154,8 +154,7 @@ function Component() {
                 url: window.location.href
               }).catch((error) => {
                 console.error('Error sharing:', error);
-                toast.error('Error sharing');
-              }).then(() => toast.success('Shared with friend'));
+              });
             } else {
               // Fallback for browsers that don't support sharing
               navigator.clipboard.writeText(window.location.href)
