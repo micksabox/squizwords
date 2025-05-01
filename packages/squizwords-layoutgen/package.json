@@ -1,24 +1,35 @@
 {
   "name": "squizwords-layoutgen",
-  "version": "0.1.0",
-  "description": "Generates crossword puzzle layouts",
-  "type": "module",
-  "main": "src/index.js",
+  "version": "1.0.0",
+  "description": "Iterative crossword layout generator optimizer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "squizwords-layoutgen": "src/cli.js"
+    "squizwords-layoutgen": "dist/cli.js"
   },
   "scripts": {
-    "start": "node src/cli.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "crossword-layout-generator": "^0.1.1" 
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "cli": "node dist/cli.js",
+    "dev": "bun run src/cli.ts",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "crossword",
-    "puzzle",
+    "layout",
     "generator"
   ],
   "author": "",
-  "license": "ISC"
-} 
+  "license": "ISC",
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.17.32",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.5.0",
+    "commander": "^13.1.0",
+    "crossword-layout-generator": "^0.1.1"
+  }
+}
