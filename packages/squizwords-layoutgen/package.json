@@ -1,0 +1,24 @@
+{
+  "name": "squizwords-layoutgen",
+  "version": "0.1.0",
+  "description": "Generates crossword puzzle layouts",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "squizwords-layoutgen": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "crossword-layout-generator": "^0.1.1" 
+  },
+  "keywords": [
+    "crossword",
+    "puzzle",
+    "generator"
+  ],
+  "author": "",
+  "license": "ISC"
+} 
