@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- This is a bun monorepo. When executing commands, ensure you first change directory to the appropriate package under packages/, unless it affects the monorepo.
+- use bun commands for working with node packages
+- use bun testing assertions unless otherwise instructed
