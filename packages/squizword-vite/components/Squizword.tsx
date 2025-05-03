@@ -56,7 +56,7 @@ function Component() {
           }}>
             VERIFY
           </button>
-          <div id="solution-hint" className='text-center mb-4'>
+          {/* <div id="solution-hint" className='text-center mb-4'>
             <p className='text-2xl'>
               Having trouble?
             </p>
@@ -81,7 +81,7 @@ function Component() {
             }
           }}>
             ASK A FRIEND
-          </button>
+          </button> */}
         </div>
         <MyCrossword
           onGridChange={(grid: GuessGrid) => {

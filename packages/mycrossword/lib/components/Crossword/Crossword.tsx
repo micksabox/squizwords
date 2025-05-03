@@ -278,8 +278,6 @@ export default function Crossword({
       .map((cell) => cell.guess ?? '') // Use empty string for blank cells
       .join('');
 
-    console.log('currentGuess for check:', currentGuess);
-
     // Calculate hash of the current guess using the provided function
     try {
       const isValid = checkClueHash(

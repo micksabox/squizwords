@@ -291,7 +291,7 @@ export default function Controls({
     <div className={bem('Controls')}>
       <div className={bem('Controls__buttons')}>
         {solutionsAvailable && <DropdownButton menu={checkMenu} text="Check" />}
-        <Button onClick={onCheckClueHash}>Check clue hash</Button>
+        <Button onClick={onCheckClueHash}>Check Line</Button>
       </div>
       <DropdownButton id="clear-control" menu={clearMenu} text="Clear" />
     </div>
