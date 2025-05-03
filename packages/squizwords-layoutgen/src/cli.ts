@@ -8,6 +8,7 @@ import { actualLayoutGenerator } from './index'; // Assuming index.ts will expor
 import { ClueInput } from './types';
 // import { GuardianCrossword, GuardianClue, Direction } from '../../mycrossword/lib/types'; // Removed due to rootDir issue
 import { calculateGridDimensions } from './util';
+import { poseidon2Hash } from '@zkpassport/poseidon2';
 
 // --- Re-defined Types (Workaround for rootDir issue) ---
 // Based on packages/mycrossword/lib/types.ts
@@ -43,7 +44,7 @@ type GuardianClue = {
   position: { x: number; y: number };
   separatorLocations: SeparatorLocationsOptional;
   solution?: string;
-  // solutionPoseidonHash?: string; // Omitted
+  solutionPoseidonHash?: string;
 };
 
 type GuardianCrossword = {
@@ -212,7 +213,17 @@ program
                                 // Add 1 to x/y for 1-based indexing required by Guardian format
                                 position: { x: ld.startx + 1, y: ld.starty + 1 }, 
                                 separatorLocations: {}, 
-                                solution: ld.answer.toUpperCase(), 
+                                // solution: ld.answer.toUpperCase(), // Removed
+                                // Convert string to BigInt array char by char for hashing
+                                solutionPoseidonHash: (() => {
+                                    const answerUpper = ld.answer.toUpperCase();
+                                    const answerFields: bigint[] = [];
+                                    for (let i = 0; i < answerUpper.length; i++) {
+                                        answerFields.push(BigInt(answerUpper.charCodeAt(i)));
+                                    }
+                                    const hashedAnswerBigInt = poseidon2Hash(answerFields);
+                                    return `0x${hashedAnswerBigInt.toString(16)}`; // Convert final hash to hex string
+                                })(),
                             };
                     }).filter((entry): entry is GuardianClue => entry !== null); 
 
@@ -225,7 +236,7 @@ program
                         id: String(Date.now()), // Use string timestamp integer for ID field
                         name: `Generated Layout ${index + 1}`, // Simple name
                         number: index + 1, // Use the layout index
-                        solutionAvailable: true, // Solution is always available for generated puzzles
+                        solutionAvailable: false, // Changed to false
                         // --- Optional Fields (can be omitted or set to default) ---
                          // creator: undefined,
                          // dateSolutionAvailable: undefined,
