@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^7.5.0",
+    "@zkpassport/poseidon2": "^0.6.1",
     "commander": "^13.1.0",
     "crossword-layout-generator": "^0.1.1"
   }

@@ -75,13 +75,17 @@ type GuardianCrossword = {
 };
 // --- End Re-defined Types ---
 
+// --- Constants ---
+const PUZZLES_DIR = path.join(__dirname, 'puzzles'); // Assuming puzzles is relative to src
+const DEFAULT_OUTPUT_BASE = 'generated_layouts';
+
 const program = new Command();
 
 program
   .version('0.1.0') // Replace with your package version
   .description('Generates crossword layouts from words and clues.')
-  .option('-i, --inputFile <path>', 'Path to a JSON file containing an array of {clue: string, answer: string} objects.')
-  .option('-o, --outputFolder <path>', 'Directory to save generated layout files.')
+  .option('-i, --inputFile <path>', 'Path to a JSON or CSV file containing clues. CSV format: ANSWER,CLUE')
+  .option('-o, --outputFolder <path>', 'Directory to save generated layout files. Defaults based on input file or timestamp.')
   .option('--numLayouts <number>', 'Number of acceptable layouts to find.', '2') // Default 2
   .option('--maxIterations <number>', 'Maximum permutations to try.', '50') // Default 50
   .action(async (options) => {
@@ -93,43 +97,93 @@ program
     // - Handle output (save files or print to console)
 
     let inputClues: ClueInput[] = [];
-    const outputDir = determineOutputDir(options.outputFolder); // Function to implement
+    let clueSource: string | 'manual' = 'manual'; // Track where clues came from
 
     // --- Input Handling ---
     if (options.inputFile) {
-      console.log(`Loading input clues from: ${options.inputFile}`);
-      try {
-        const rawData = fs.readFileSync(options.inputFile, 'utf-8');
-        inputClues = JSON.parse(rawData);
-        if (!Array.isArray(inputClues) || inputClues.length === 0 || !inputClues.every(item => typeof item.clue === 'string' && typeof item.answer === 'string')) {
-          throw new Error('Invalid input JSON format. Expected an array of {clue: string, answer: string} objects.');
+        const filePath = path.resolve(options.inputFile);
+        clueSource = filePath; // Store the input file path
+        console.log(`Loading input clues from: ${filePath}`);
+        try {
+            if (filePath.endsWith('.json')) {
+                const rawData = fs.readFileSync(filePath, 'utf-8');
+                inputClues = JSON.parse(rawData);
+                if (!Array.isArray(inputClues) || inputClues.length === 0 || !inputClues.every(item => typeof item.clue === 'string' && typeof item.answer === 'string')) {
+                    throw new Error('Invalid input JSON format. Expected an array of {clue: string, answer: string} objects.');
+                }
+            } else if (filePath.endsWith('.csv')) {
+                inputClues = loadCluesFromCSV(filePath); // Use helper function
+            } else {
+                throw new Error('Unsupported input file type. Please use .json or .csv');
+            }
+            console.log(`Loaded ${inputClues.length} clues from file.`);
+        } catch (error: any) {
+            console.error(`Failed to load or parse input file at ${filePath}:`, error.message);
+            process.exit(1);
         }
-        console.log(`Loaded ${inputClues.length} clues from file.`);
-      } catch (error: any) {
-        console.error(`Failed to load or parse input file at ${options.inputFile}:`, error.message);
-        process.exit(1);
-      }
     } else {
-      console.log('No input file provided. Starting interactive mode...');
-      inputClues = await promptForClues(); // Function to implement using inquirer
+        // No input file specified, check puzzles directory
+        let puzzleFiles: string[] = [];
+        try {
+            if (fs.existsSync(PUZZLES_DIR)) {
+                 puzzleFiles = fs.readdirSync(PUZZLES_DIR).filter(file => file.endsWith('.csv'));
+            }
+        } catch (err) {
+            console.warn(`Warning: Could not read puzzles directory at ${PUZZLES_DIR}. Proceeding to manual entry.`, err);
+            // clueSource remains 'manual'
+        }
+
+        if (puzzleFiles.length > 0) {
+            const choices = [
+                ...puzzleFiles.map(file => ({ name: file, value: path.join(PUZZLES_DIR, file) })),
+                { name: 'Enter clues manually', value: 'manual' }
+            ];
+
+            const selectedSource = await select({
+                message: 'Select a puzzle CSV file or choose manual entry:',
+                choices: choices,
+            });
+
+            if (selectedSource !== 'manual') {
+                 clueSource = selectedSource; // Store selected CSV path
+                 console.log(`Loading clues from selected CSV: ${path.basename(selectedSource)}`);
+                 try {
+                    inputClues = loadCluesFromCSV(selectedSource);
+                    console.log(`Loaded ${inputClues.length} clues from ${path.basename(selectedSource)}.`);
+                 } catch (error: any) {
+                    console.error(`Failed to load or parse selected CSV file at ${selectedSource}:`, error.message);
+                    process.exit(1);
+                 }
+            } else {
+                 console.log('Proceeding with manual clue entry...');
+                 // clueSource remains 'manual'
+                 inputClues = await promptForClues();
+            }
+
+        } else {
+            console.log('No input file provided and no CSV files found in puzzles directory. Starting interactive mode...');
+            // clueSource remains 'manual'
+            inputClues = await promptForClues(); // Function to implement using inquirer
+        }
     }
 
     if (inputClues.length === 0) {
-      console.error('No input clues provided. Exiting.');
+      console.error('No input clues provided or loaded. Exiting.');
       process.exit(1);
     }
 
-    // --- Ensure Output Directory Exists (if specified) ---
-    if (outputDir) {
-        try {
-            if (!fs.existsSync(outputDir)) {
-                fs.mkdirSync(outputDir, { recursive: true });
-                console.log(`Created output directory: ${outputDir}`);
-            }
-        } catch (error: any) {
-            console.error(`Failed to create output directory at ${outputDir}:`, error.message);
-            process.exit(1);
+    // --- Determine Output Directory --- (Moved before optimizer)
+    const outputDir = determineOutputDir(options.outputFolder, clueSource);
+
+    // --- Ensure Output Directory Exists --- (Run after determining path)
+    try {
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+            console.log(`Created output directory: ${outputDir}`);
         }
+    } catch (error: any) {
+        console.error(`Failed to create output directory at ${outputDir}:`, error.message);
+        process.exit(1);
     }
 
 
@@ -290,19 +344,106 @@ program
 
   });
 
+// Helper function to load clues from CSV
+function loadCluesFromCSV(filePath: string): ClueInput[] {
+    const clues: ClueInput[] = [];
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const lines = fileContent.split('\n');
+    let skippedLines = 0;
+
+    lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine || trimmedLine.startsWith('#')) { // Skip empty lines and comments
+             return;
+        }
+
+        // Basic CSV parsing: Split by the first comma only to handle commas in clues
+        // Handles cases like "ANSWER,Clue with, a comma"
+        // Handles quoted clues like "ANSWER,""Quoted, clue"""
+        let answer = '';
+        let clue = '';
+        let inQuotes = false;
+        let splitIndex = -1;
+
+        for (let i = 0; i < trimmedLine.length; i++) {
+            const char = trimmedLine[i];
+            if (char === '"') {
+                // Handle escaped quotes ("") inside quoted field
+                if (inQuotes && i + 1 < trimmedLine.length && trimmedLine[i+1] === '"') {
+                     i++; // Skip the next quote
+                     continue;
+                }
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                 splitIndex = i;
+                 break;
+            }
+        }
+
+        if (splitIndex !== -1) {
+            answer = trimmedLine.substring(0, splitIndex).trim();
+            clue = trimmedLine.substring(splitIndex + 1).trim();
+
+             // Remove surrounding quotes if present
+            if (answer.startsWith('"') && answer.endsWith('"')) {
+                answer = answer.substring(1, answer.length - 1).replace(/""/g, '"'); // Unescape quotes
+            }
+             if (clue.startsWith('"') && clue.endsWith('"')) {
+                clue = clue.substring(1, clue.length - 1).replace(/""/g, '"'); // Unescape quotes
+            }
+
+        } else {
+             // If no comma found, maybe it's just an answer? Or malformed. Skip for now.
+             console.warn(`Skipping malformed CSV line ${index + 1} in ${path.basename(filePath)}: No comma found or incorrect format.`);
+             skippedLines++;
+             return;
+        }
+
+
+        // Validate
+        if (!answer || !clue) {
+            console.warn(`Skipping incomplete CSV line ${index + 1} in ${path.basename(filePath)}: Missing answer or clue.`);
+            skippedLines++;
+        } else {
+            clues.push({ answer: answer.toUpperCase(), clue }); // Convert answer to uppercase
+        }
+    });
+
+    if (skippedLines > 0) {
+        console.log(`Skipped ${skippedLines} lines due to formatting issues or missing data.`);
+    }
+     if (clues.length === 0 && lines.length > 0 && skippedLines === lines.length) {
+         throw new Error(`Failed to parse any valid clues from ${path.basename(filePath)}. Ensure the format is ANSWER,CLUE.`);
+     }
+
+
+    return clues;
+}
+
+
 // Helper function to determine output directory
-function determineOutputDir(outputFolderOption?: string): string {
+function determineOutputDir(outputFolderOption: string | undefined, clueSource: string | 'manual'): string {
     if (outputFolderOption) {
-        // Use provided path
-        return path.resolve(outputFolderOption);
+        // Use provided path directly
+        const resolvedPath = path.resolve(outputFolderOption);
+        console.log(`Using specified output directory: ${resolvedPath}`);
+        return resolvedPath;
     } else {
-        // Create default timestamped directory
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const defaultDir = path.join(process.cwd(), 'generated_layouts', timestamp);
-        console.log(`No output folder specified, using default: ${defaultDir}`);
-        return defaultDir;
-        // If you want console output by default, return null here and adjust the logic above.
-        // return null;
+        // Determine default path based on clue source
+        let defaultDirName: string;
+        if (clueSource === 'manual') {
+            // Use timestamp for manual entry
+             defaultDirName = new Date().toISOString().replace(/[:.]/g, '-');
+             console.log(`Using default timestamped directory for manual input: ${defaultDirName}`);
+        } else {
+             // Use filename (without extension) for file input
+            const inputFileName = path.basename(clueSource, path.extname(clueSource));
+            defaultDirName = inputFileName.replace(/[^a-zA-Z0-9_-]/g, '_'); // Sanitize name
+             console.log(`Using default directory based on input file: ${defaultDirName}`);
+        }
+        // Construct the full path relative to the current working directory
+        const defaultPath = path.join(process.cwd(), DEFAULT_OUTPUT_BASE, defaultDirName);
+        return defaultPath;
     }
 }
 
@@ -312,7 +453,8 @@ async function promptForClues(): Promise<ClueInput[]> {
     const clues: ClueInput[] = [];
     console.log('Enter clues and answers. Press Enter with an empty answer to finish.');
     while (true) {
-        const answer = await input({ message: `Enter answer #${clues.length + 1} (or leave blank to finish):` });
+        const answerRaw = await input({ message: `Enter answer #${clues.length + 1} (or leave blank to finish):` });
+        const answer = answerRaw.trim().toUpperCase(); // Trim and convert to uppercase
         if (!answer) {
             if (clues.length > 0) break; // Need at least one word
             else {
@@ -320,11 +462,20 @@ async function promptForClues(): Promise<ClueInput[]> {
               continue;
             }
         }
-        const clue = await input({ message: `Enter clue for "${answer}":` });
-         if (!clue) { // Ensure clue is not empty
+        // Basic validation for answer (only letters)
+        if (!/^[A-Z]+$/.test(answer)) {
+             console.log("Invalid answer format. Please use only letters (A-Z).");
+             continue;
+        }
+
+        const clueRaw = await input({ message: `Enter clue for "${answer}":` });
+        const clue = clueRaw.trim(); // Trim clue
+
+         if (!clue) { // Ensure clue is not empty after trimming
             console.log("Clue cannot be empty. Please provide a clue.");
             // Re-prompt for the clue for the same answer
-             const correctedClue = await input({ message: `Enter clue for "${answer}":` });
+             const correctedClueRaw = await input({ message: `Enter clue for "${answer}":` });
+             const correctedClue = correctedClueRaw.trim();
              if (!correctedClue) {
                  console.log("Skipping word due to missing clue.");
                  continue;
