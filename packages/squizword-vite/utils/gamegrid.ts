@@ -103,6 +103,9 @@ A	G	E
 }
 */
 
+
+export const NULLISH_CELL = ' ';
+
 import { GuessGrid } from "../../mycrossword/lib/types.js";
 import { GuardianCrossword } from "../../mycrossword/lib/types.js";
 // For each clue, get the guess from the grid
@@ -118,7 +121,7 @@ export const getGameClueGuesses = ( gameData:GuardianCrossword, grid:GuessGrid) 
         const col = startCol + i;
         // Ensure we don't go out of bounds
         if (grid.value[col] !== undefined && grid.value[col][startRow] !== undefined) {
-          guess += grid.value[col][startRow] || ' '; // Use space for empty/nullish defined cells
+          guess += grid.value[col][startRow] || NULLISH_CELL; // Use space for empty/nullish defined cells
         } else {
           // Do nothing if out of bounds for this test case
           // guess += ''; // Or append nothing if truly out of bounds needed
@@ -140,6 +143,7 @@ export const getGameClueGuesses = ( gameData:GuardianCrossword, grid:GuessGrid) 
     return {
       id: clue.id,
       guess: guess,
+      number: clue.number,
     };
   }); // Closing parenthesis for map was missing, added it here.
 };
