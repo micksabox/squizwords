@@ -41,7 +41,7 @@
         "solutionPoseidonHash": "0x62aab0f324e6a2672262884200f0dc2274ed1e9b77504f6ad3a612874084e55"
       },
       {
-        "clue": "aquatic race of privacy advocates",
+        "clue": "aquatic humanoid species of ZK",
         "direction": "across",
         "group": [
           "3-across"
@@ -58,7 +58,7 @@
         "solutionPoseidonHash": "0x1ab1390dc704a9c9de075794526c16763b8c7d00cf994dbae1b522e322e16b2e"
       },
       {
-        "clue": "ancient tree with zero knowledge",
+        "clue": "ancient tree, ZK protector spirit",
         "direction": "across",
         "group": [
           "4-across"
@@ -92,7 +92,7 @@
         "solutionPoseidonHash": "0x168fc581e9c3154748159ce84aab025d7adfcd85d7c8d3b93529d0bedb0a1146"
       },
       {
-        "clue": "predominant race of the kingdom",
+        "clue": "member of the predominant elf-humanoid race of the kingdom",
         "direction": "down",
         "group": [
           "6-down"
@@ -109,7 +109,7 @@
         "solutionPoseidonHash": "0x1a5b68a1a16eb3b8bb3195e494b0020fbe11ef3db06ee42b327309faa7537f2e"
       },
       {
-        "clue": "name of the kingdom",
+        "clue": "name of the kingdom depicted on the shield",
         "direction": "across",
         "group": [
           "7-across"
@@ -126,7 +126,8 @@
         "solutionPoseidonHash": "0xd227521927d3083aeb48071fb88eba3ec0f722ced6015282ec28182f06bdcd7"
       },
       {
-        "clue": "strange, transparent, small forest-dwelling spirit race",
+        "clue": "strange, transparent, small forest-dwelling plant spirits",
+        "lore": "Produce seeds to expand inventory",
         "direction": "down",
         "group": [
           "8-down"
@@ -160,7 +161,7 @@
         "solutionPoseidonHash": "0x1724ace2aca495ebf5fd74d57435c089c56139b33bd14f542a05362cf11066c9"
       },
       {
-        "clue": "mountain dwelling race, ZK proving system",
+        "clue": "ZK proving system, volcano mining species",
         "direction": "down",
         "group": [
           "4-down"
@@ -194,7 +195,7 @@
         "solutionPoseidonHash": "0x605f44f11c0dd6a40436ea5866f86c8a0daf056a4646456af20418ddc7d56ce"
       },
       {
-        "clue": "Princess of the realm between worlds, the Edge",
+        "clue": "the Edge realm between worlds princess",
         "direction": "across",
         "group": [
           "11-across"
