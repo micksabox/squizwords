@@ -10,15 +10,18 @@ import { useOffChainVerification } from '../hooks/useOffChainVerification.jsx';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses, NULLISH_CELL } from '../utils/gamegrid.js';
 import { toast } from 'react-toastify';
-import crosswordData from '../crosswords/linktotheproofs.json' assert { type: "json" };
-import { calculateSortedGuessesHash, getPaddedSortedGuesses, prepareHashInput } from '../utils/gamecheck.js';
+import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' };
+import {
+  calculateSortedGuessesHash,
+  getPaddedSortedGuesses,
+  prepareHashInput,
+} from '../utils/gamecheck.js';
 import { InputMap } from '@noir-lang/types';
-import heroImage from '/image (1).webp';
-
+import heroImage from '/legendofzeku.webp';
+import { GlobeIcon, TableIcon, Sword, Swords } from 'lucide-react';
 function Component() {
-  
   const data: GuardianCrossword = crosswordData as GuardianCrossword;
-  
+
   const [circuitInput, setCircuitInput] = useState<Record<string, string | string[]> | undefined>();
   const [solutionHash, setSolutionHash] = useState<string>();
   const { noir, proofData, backend } = useProofGeneration(circuitInput);
@@ -26,29 +29,31 @@ function Component() {
 
   const [userGuesses, setUserGuesses] = useState<string[]>();
 
-  useEffect(function processUserGuesses() {
+  useEffect(
+    function processUserGuesses() {
+      if (!userGuesses || !solutionHash) return;
 
-    if(!userGuesses || !solutionHash) return;
+      // if any of the guesses has a space, the grid is invalid
+      if (userGuesses.length > 0 && userGuesses.some(g => g.includes(NULLISH_CELL))) {
+        // toast.error('Incomplete grid, please fill in all cells');
+        return;
+      }
 
-    // if any of the guesses has a space, the grid is invalid
-    if (userGuesses.length > 0 && userGuesses.some((g) => g.includes(NULLISH_CELL))) {
-      // toast.error('Incomplete grid, please fill in all cells');
-      return;
-    }
+      console.log('userGuesses', userGuesses);
 
-    console.log('userGuesses', userGuesses);
+      const preparedCircuitInput = prepareHashInput(userGuesses);
 
-    const preparedCircuitInput = prepareHashInput(userGuesses);
+      const inputs: Record<string, string | string[]> = {
+        solution_words: preparedCircuitInput.map(word => word.toString()),
+        solution_root: solutionHash,
+      };
 
-    const inputs: Record<string, string | string[]> = {
-      solution_words: preparedCircuitInput.map(word => word.toString()),
-      solution_root: solutionHash,
-    };
+      console.log('preparedCircuitInput', preparedCircuitInput);
 
-    console.log('preparedCircuitInput', preparedCircuitInput);
-
-    setCircuitInput(inputs);
-  }, [userGuesses, solutionHash]);
+      setCircuitInput(inputs);
+    },
+    [userGuesses, solutionHash],
+  );
 
   // const verifyButton = useOnChainVerification(proofData);
 
@@ -63,36 +68,55 @@ function Component() {
   //   setInput({ word: word.value, solutionHash: solutionHash.value });
   // };
 
-
   return (
     <>
-      <div className='text-center text-sm bg-black text-white pt-2'>
-        <a href="https://www.noirhack.com" className="hover:underline">NoirHack 2025 {/*Winner 🏆*/}</a>
+      <div className="bg-black py-2">
+        <div className="max-w-screen-lg mx-auto flex items-center ">
+          <img
+            src="/crossword_squid_template_7.png"
+            alt="squizword"
+            className="w-12 mr-2 ml-2 lg:ml-0 h-12 -scale-x-100"
+          />
+          <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
+          {/* <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" /> */}
+        </div>
       </div>
-      <div className="flex items-center bg-black justify-center">
-        <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 mr-2 h-12 -scale-x-100" />
-        <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
-        <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" />
-      </div>
-      
-      <div className='max-w-screen-lg mx-auto'>
+
+      <div className="max-w-screen-lg mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-8 items-center">
-          <img src={heroImage} alt="Legend of ZK: A Link to the Proofs" className="w-full px-8 xl:px-0 md:w-3/4 mx-auto md:mx-0 rounded-md mb-4 md:mb-0" />
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">PUZZLE</h2>
-              <div className="flex gap-2">
-                <button 
-                  disabled={false} 
-                  className='bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md'
+          <div className="relative">
+            <img
+              src={heroImage}
+              alt="Legend of ZK: A Link to the Proofs"
+              className="w-full px-8 xl:px-0 md:w-3/4 mx-auto md:mx-0 rounded-md mb-4 md:mb-0"
+            />
+            <div className="absolute top-0 right-2 text-sm bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-300 hover:from-yellow-400 hover:via-amber-400 hover:to-yellow-200 transition-colors duration-300 text-black px-2 py-1 rounded-md font-bold">
+                Featured for NoirHack 2025
+            </div>
+          </div>
+          <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6 mb-6">
+            {/* <h2 className="text-2xl mb-4 font-bold">PUZZLE PROVING</h2> */}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-4">
+                <button
+                  disabled={false}
+                  className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
                   onClick={() => {
                     console.log('clicked');
                     toast.success('Solution verified');
                   }}
                 >
-                  BUILD
-                  PROOF
+                  CHECK <TableIcon className="w-6 h-6 inline-block" />
                 </button>
+              </div>
+              <div className="flex gap-4">
+                <button className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                  MULTIPLAYER <GlobeIcon className="w-6 h-6 inline-block" />
+                </button>
+                <div className="flex items-center gap-2">
+                  <Swords className="w-6 h-6 inline-block" />
+                  <p className="text-sm">1000</p>
+                </div>
               </div>
             </div>
           </div>

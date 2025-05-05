@@ -16,6 +16,7 @@
     "@tanstack/react-query-devtools": "5.0.5",
     "@tanstack/react-query-persist-client": "5.0.5",
     "@zkpassport/poseidon2": "^0.6.1",
+    "lucide-react": "^0.507.0",
     "msgpackr": "^1.11.2",
     "mycrossword": "workspace:*",
     "react": "^18.2.0",
