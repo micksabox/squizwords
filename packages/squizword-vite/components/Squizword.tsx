@@ -17,7 +17,7 @@ import {
   prepareHashInput,
 } from '../utils/gamecheck.js';
 import { InputMap } from '@noir-lang/types';
-import heroImage from '/legendofzeku.webp';
+import heroImage from '/legendofzeku-2.png';
 import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
 function Component() {
   const data: GuardianCrossword = crosswordData as GuardianCrossword;
@@ -88,7 +88,7 @@ function Component() {
             <img
               src={heroImage}
               alt="Legend of ZK: A Link to the Proofs"
-              className="w-full px-8 xl:px-0 md:w-3/4 mx-auto md:mx-0 rounded-md mb-4 md:mb-0"
+              className="w-full px-8 xl:px-0 md:w-3/4 mx-auto md:mx-0 rounded-md md:mb-0"
             />
             <div className="absolute top-0 right-2 text-sm bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-300 hover:from-yellow-400 hover:via-amber-400 hover:to-yellow-200 transition-colors duration-300 text-black px-2 py-1 rounded-md font-bold">
                 Featured for NoirHack 2025
