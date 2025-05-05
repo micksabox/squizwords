@@ -18,7 +18,7 @@ import {
 } from '../utils/gamecheck.js';
 import { InputMap } from '@noir-lang/types';
 import heroImage from '/legendofzeku.webp';
-import { GlobeIcon, TableIcon, Sword, Swords } from 'lucide-react';
+import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
 function Component() {
   const data: GuardianCrossword = crosswordData as GuardianCrossword;
 
@@ -83,7 +83,7 @@ function Component() {
       </div>
 
       <div className="max-w-screen-lg mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2 items-center">
           <div className="relative">
             <img
               src={heroImage}
@@ -94,9 +94,9 @@ function Component() {
                 Featured for NoirHack 2025
             </div>
           </div>
-          <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6 mb-6">
+          <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6">
             {/* <h2 className="text-2xl mb-4 font-bold">PUZZLE PROVING</h2> */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between md:items-center">
               <div className="flex gap-4">
                 <button
                   disabled={false}
@@ -106,17 +106,17 @@ function Component() {
                     toast.success('Solution verified');
                   }}
                 >
-                  CHECK <TableIcon className="w-6 h-6 inline-block" />
+                  <ListChecksIcon className="w-6 h-6 inline-block" /> CHECK 
                 </button>
               </div>
               <div className="flex gap-4">
                 <button className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-                  MULTIPLAYER <GlobeIcon className="w-6 h-6 inline-block" />
+                <Share2Icon className="w-6 h-6 inline-block" /> SHARE 
                 </button>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <Swords className="w-6 h-6 inline-block" />
                   <p className="text-sm">1000</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
