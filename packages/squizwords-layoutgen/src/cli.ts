@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
+import { stringToHex } from 'viem';
 import * as path from 'path';
 import { Command } from 'commander';
 import { input, select } from '@inquirer/prompts';
@@ -229,6 +230,28 @@ program
                         return; // Skip this layout if dimensions are invalid
                     }
 
+                    const cluesWithDetails = result.layout.map((entry, index) => ({
+                      number: entry.position || index,
+                      direction: entry.orientation,
+                      guess: entry.answer
+                    }));
+
+                    cluesWithDetails.sort((a, b) => {
+                      if (a.direction === 'down' && b.direction === 'across') return -1;
+                      if (a.direction === 'across' && b.direction === 'down') return 1;
+                      // Use the clue number for secondary sorting
+                      if (a.number < b.number) return -1;
+                      if (a.number > b.number) return 1;
+                      return 0;
+                    });
+
+                    const sortedGuesses = cluesWithDetails.map(c => c.guess);
+
+                    const solutionHash = `0x${poseidon2Hash(sortedGuesses.map(guess => BigInt(stringToHex(guess)))).toString(16)}`;
+                  
+                    console.log('solutionHash', solutionHash);
+
+
                     // Map directly from result.layout (which is LayoutData[])
                     const entries: GuardianClue[] = result.layout
                         .filter(ld => ld.orientation !== 'none') // Only include placed words
@@ -296,7 +319,7 @@ program
                          // dateSolutionAvailable: undefined,
                          // pdf: undefined,
                          // webPublicationDate: undefined,
-                    };
+                    };                  
 
                     fs.writeFileSync(guardianFilePath, JSON.stringify(guardianCrossword, null, 2));
                     console.log(`   - Saved Guardian data to: ${guardianFilePath}`);
