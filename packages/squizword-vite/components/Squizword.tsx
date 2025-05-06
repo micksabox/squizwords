@@ -103,7 +103,7 @@ function Component() {
               className="w-full px-8 xl:px-0 md:w-3/4 mx-auto md:mx-0 rounded-md md:mb-0"
             />
             <div className="absolute top-0 right-2 text-sm bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-300 hover:from-yellow-400 hover:via-amber-400 hover:to-yellow-200 transition-colors duration-300 text-black px-2 py-1 rounded-md font-bold">
-                Featured for NoirHack 2025
+              Featured for NoirHack 2025
             </div>
           </div>
           <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6">
@@ -118,12 +118,46 @@ function Component() {
                     toast.success('Solution verified');
                   }}
                 >
-                  <ListChecksIcon className="w-6 h-6 inline-block" /> CHECK 
+                  <ListChecksIcon className="w-6 h-6 inline-block" /> CHECK
                 </button>
               </div>
               <div className="flex gap-4">
-                <button className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-                <Share2Icon className="w-6 h-6 inline-block" /> SHARE 
+                <button
+                  onClick={() => {
+                    // add a timestamp to the url to prevent caching
+                    const url = `${window.location.href}${window.location.search ? '&' : '?'}t=${Date.now()}`;
+
+                    let matchingClue = null;
+                    // Parse hash and find matching clue
+                    if (window.location.hash) {
+                      const clueId = window.location.hash.slice(1); // Remove # prefix
+                      matchingClue = data.entries.find((entry: any) => entry.id === clueId);
+                      if (matchingClue) {
+                        console.log('Found matching clue:', matchingClue.clue);
+                      }
+                    }
+
+                    if (navigator.share) {
+                      navigator
+                        .share({
+                          title: 'Play Squizwords With Me',
+                          text: `Can you help me solve this clue? ${matchingClue?.clue}`,
+                          url,
+                        })
+                        .catch(error => {
+                          console.error('Error sharing:', error);
+                        });
+                    } else {
+                      // Fallback for browsers that don't support sharing
+                      navigator.clipboard
+                        .writeText(window.location.href)
+                        .then(() => toast.success('Link copied to clipboard!'))
+                        .catch(console.error);
+                    }
+                  }}
+                  className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+                >
+                  <Share2Icon className="w-6 h-6 inline-block" /> SHARE
                 </button>
                 {/* <div className="flex items-center gap-2">
                   <Swords className="w-6 h-6 inline-block" />
@@ -132,32 +166,6 @@ function Component() {
               </div>
             </div>
           </div>
-          {/* <div id="solution-hint" className='text-center mb-4'>
-            <p className='text-2xl'>
-              Having trouble?
-            </p>
-          </div>
-          <button disabled={false} className='bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 mx-auto block text-white px-4 py-2 rounded-md' onClick={() => {
-
-            // const link = TBD
-
-            if (navigator.share) {
-              navigator.share({
-                title: 'Squizwords Puzzle',
-                text: 'Check out this crossword puzzle!',
-                url: window.location.href
-              }).catch((error) => {
-                console.error('Error sharing:', error);
-              });
-            } else {
-              // Fallback for browsers that don't support sharing
-              navigator.clipboard.writeText(window.location.href)
-                .then(() => toast.success('Link copied to clipboard!'))
-                .catch(console.error);
-            }
-          }}>
-            ASK A FRIEND
-          </button> */}
         </div>
         <MyCrossword
           onGridChange={(grid: GuessGrid) => {
