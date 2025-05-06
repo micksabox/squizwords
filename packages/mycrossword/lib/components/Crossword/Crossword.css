@@ -3,6 +3,7 @@
 }
 .MyCrossword .Crossword__gridAndControls {
   flex-shrink: 0;
+  gap: 16px;
   justify-content: center;
   display: flex;
   flex-direction: column;

@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { blankNeighbours } from '~/utils/cell';
 import {
-  getCrossingClueIds,
-  getGroupCells,
+  // getCrossingClueIds,
+  // getGroupCells,
   isCluePopulated,
 } from './../../utils/clue';
 import { getGuessGrid } from '~/utils/guess';
 import { Cell, CellChange, Char, Clue, GuessGrid } from '~/types';
 import Confirm from '~/components/Confirm/Confirm';
 import DropdownButton from '~/components/DropdownButton/DropdownButton';
-import Button from '~/components/Button/Button';
+// import Button from '~/components/Button/Button';
 import { getBem } from '~/utils/bem';
 import { useCellsStore } from '~/stores/useCellsStore';
 import { useCluesStore } from '~/stores/useCluesStore';
@@ -41,9 +41,9 @@ export default function Controls({
   onCellChange,
   onComplete,
   setGuessGrid,
-  solutionsAvailable,
+  // solutionsAvailable,
   onCheckClueHash,
-  disableGridChecks = false,
+  // disableGridChecks = false,
 }: ControlsProps) {
   const bem = getBem('Controls');
   // const selectedCell = cells.find((cell) => cell.selected);
@@ -63,17 +63,17 @@ export default function Controls({
     setGuessGrid(getGuessGrid(gridCols, gridRows, updatedCells));
   };
 
-  const updateAnsweredForCrossingClues = (clue: Clue, updatedCells: Cell[]) => {
-    const clueIds = getCrossingClueIds(clue, updatedCells);
-    clueIds.forEach((clueId) => {
-      const crossingClue = clues.find((c) => c.id === clueId);
+  // const updateAnsweredForCrossingClues = (clue: Clue, updatedCells: Cell[]) => {
+  //   const clueIds = getCrossingClueIds(clue, updatedCells);
+  //   clueIds.forEach((clueId) => {
+  //     const crossingClue = clues.find((c) => c.id === clueId);
 
-      if (crossingClue) {
-        const populated = isCluePopulated(crossingClue, updatedCells);
-        answerSomeClues(crossingClue.group, populated);
-      }
-    });
-  };
+  //     if (crossingClue) {
+  //       const populated = isCluePopulated(crossingClue, updatedCells);
+  //       answerSomeClues(crossingClue.group, populated);
+  //     }
+  //   });
+  // };
 
   const cellChange = (cell: Cell, newGuess: Char | undefined) => {
     if (onCellChange !== undefined && cell.guess !== newGuess) {
@@ -85,51 +85,51 @@ export default function Controls({
     }
   };
 
-  const checkMenu = [
-    {
-      disabled: selectedClue === undefined,
-      onClick: () => {
-        if (selectedClue !== undefined) {
-          // handle cell changes
-          if (onCellChange !== undefined) {
-            const groupCells = getGroupCells(selectedClue.group, cells);
-            groupCells.forEach((cell) => {
-              if (cell.guess !== undefined && cell.val !== cell.guess) {
-                cellChange(cell, undefined);
-              }
-            });
-          }
+  // const checkMenu = [
+  //   {
+  //     disabled: selectedClue === undefined,
+  //     onClick: () => {
+  //       if (selectedClue !== undefined) {
+  //         // handle cell changes
+  //         if (onCellChange !== undefined) {
+  //           const groupCells = getGroupCells(selectedClue.group, cells);
+  //           groupCells.forEach((cell) => {
+  //             if (cell.guess !== undefined && cell.val !== cell.guess) {
+  //               cellChange(cell, undefined);
+  //             }
+  //           });
+  //         }
 
-          const updatedCells = cells.map((cell) => {
-            const intersection = selectedClue.group.filter((clueId) =>
-              cell.clueIds.includes(clueId),
-            );
+  //         const updatedCells = cells.map((cell) => {
+  //           const intersection = selectedClue.group.filter((clueId) =>
+  //             cell.clueIds.includes(clueId),
+  //           );
 
-            if (intersection.length > 0) {
-              return {
-                ...cell,
-                guess: cell.guess === cell.val ? cell.val : undefined,
-              };
-            }
+  //           if (intersection.length > 0) {
+  //             return {
+  //               ...cell,
+  //               guess: cell.guess === cell.val ? cell.val : undefined,
+  //             };
+  //           }
 
-            return cell;
-          });
+  //           return cell;
+  //         });
 
-          setCells(updatedCells);
-          updateAnsweredForCrossingClues(selectedClue, updatedCells);
+  //         setCells(updatedCells);
+  //         updateAnsweredForCrossingClues(selectedClue, updatedCells);
 
-          // update guesses in local storage
-          updateGuessGrid(updatedCells);
-        }
-      },
-      text: 'Check word',
-    },
-    {
-      onClick: () => setShowCheckGridConfirm(true),
-      text: 'Check grid',
-      disabled: disableGridChecks,
-    },
-  ];
+  //         // update guesses in local storage
+  //         updateGuessGrid(updatedCells);
+  //       }
+  //     },
+  //     text: 'Check word',
+  //   },
+  //   {
+  //     onClick: () => setShowCheckGridConfirm(true),
+  //     text: 'Check grid',
+  //     disabled: disableGridChecks,
+  //   },
+  // ];
 
   const clearMenu = [
     {
@@ -288,11 +288,8 @@ export default function Controls({
   }
 
   return (
-    <div className={bem('Controls')}>
-      <div className={bem('Controls__buttons')}>
-        {solutionsAvailable && <DropdownButton menu={checkMenu} text="Check" />}
-        <Button onClick={onCheckClueHash}>Check Line</Button>
-      </div>
+    <div className={"flex p-16 gap-4 mt-8"}>
+      <button className={"bg-black micro-5-regular px-4 py-2 rounded-md text-white text-4xl"} onClick={onCheckClueHash}>CHECK LINE</button>
       <DropdownButton id="clear-control" menu={clearMenu} text="Clear" />
     </div>
   );
