@@ -140,8 +140,8 @@ function Component() {
                     if (navigator.share) {
                       navigator
                         .share({
-                          title: 'Play Squizwords With Me',
-                          text: `Can you help me solve this clue? ${matchingClue?.clue}`,
+                          title: 'Play Squizwords Now',
+                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'}?`,
                           url,
                         })
                         .catch(error => {
