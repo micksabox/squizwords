@@ -19,6 +19,18 @@ import {
 import { InputMap } from '@noir-lang/types';
 import heroImage from '/legendofzeku-2.png';
 import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
+
+function playSound(soundFile: string) {
+  const audio = new Audio(soundFile);
+  audio.play();
+}
+
+function playRandomSuccessSound() {
+  const randomIndex = Math.floor(Math.random() * 4) + 1; // Generates random number between 1 and 4
+  const soundFile = `/sound_effects/line_success${randomIndex}.mp3`;
+  playSound(soundFile);
+}
+
 function Component() {
   const data: GuardianCrossword = crosswordData as GuardianCrossword;
 
@@ -162,6 +174,13 @@ function Component() {
           }}
           onClueHashCheckResult={(clueId: string, result: boolean) => {
             console.log(clueId, result);
+            if (result) {
+              toast.success('Correct!');
+              playRandomSuccessSound();
+            } else {
+              toast.error('Try again!');
+              playSound('/sound_effects/line_failure.mp3');
+            }
           }}
           checkClueHash={(clueId: string, guess: string, hashedSolution: string) => {
             console.log(clueId, guess, hashedSolution);
