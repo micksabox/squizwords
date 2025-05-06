@@ -125,7 +125,14 @@ function Component() {
                 <button
                   onClick={() => {
                     // add a timestamp to the url to prevent caching
-                    const url = `${window.location.href}${window.location.search ? '&' : '?'}t=${Date.now()}`;
+                    let shareUrl = `${window.location.origin}${window.location.pathname}`;
+                    const timestampParam = `t=${Date.now()}`;
+                    if (window.location.search) {
+                      shareUrl += `${window.location.search}&${timestampParam}`;
+                    } else {
+                      shareUrl += `?${timestampParam}`;
+                    }
+                    shareUrl += window.location.hash;
 
                     let matchingClue = null;
                     // Parse hash and find matching clue
@@ -142,7 +149,7 @@ function Component() {
                         .share({
                           title: 'Play Squizwords Now',
                           text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'} with zero knowledge proofs!`,
-                          url,
+                          url: shareUrl,
                         })
                         .catch(error => {
                           console.error('Error sharing:', error);
@@ -150,7 +157,7 @@ function Component() {
                     } else {
                       // Fallback for browsers that don't support sharing
                       navigator.clipboard
-                        .writeText(window.location.href)
+                        .writeText(shareUrl)
                         .then(() => toast.success('Link copied to clipboard!'))
                         .catch(console.error);
                     }
