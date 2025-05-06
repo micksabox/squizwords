@@ -141,7 +141,7 @@ function Component() {
                       navigator
                         .share({
                           title: 'Play Squizwords Now',
-                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'}?`,
+                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'} with zero knowledge proofs!`,
                           url,
                         })
                         .catch(error => {
