@@ -124,15 +124,14 @@ function Component() {
               <div className="flex gap-4">
                 <button
                   onClick={() => {
-                    // add a timestamp to the url to prevent caching
-                    let shareUrl = `${window.location.origin}${window.location.pathname}`;
+                    // Add a timestamp to the end of the current href
                     const timestampParam = `t=${Date.now()}`;
-                    if (window.location.search) {
-                      shareUrl += `${window.location.search}&${timestampParam}`;
+                    let shareUrl = window.location.href;
+                    if (shareUrl.includes('?')) {
+                      shareUrl += `&${timestampParam}`;
                     } else {
                       shareUrl += `?${timestampParam}`;
                     }
-                    shareUrl += window.location.hash;
 
                     let matchingClue = null;
                     // Parse hash and find matching clue
