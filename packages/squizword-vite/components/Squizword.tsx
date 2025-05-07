@@ -19,6 +19,7 @@ import {
 import { InputMap } from '@noir-lang/types';
 import heroImage from '/legendofzeku-2.png';
 import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
+import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 
 function playSound(soundFile: string) {
   const audio = new Audio(soundFile);
@@ -40,6 +41,8 @@ function Component() {
   useOffChainVerification(backend!, noir, proofData);
 
   const [userGuesses, setUserGuesses] = useState<string[]>();
+
+  const { connectionCount } = useSquizwordsParty('linktotheproofs');
 
   useEffect(
     function processUserGuesses() {
@@ -106,10 +109,9 @@ function Component() {
               Featured for NoirHack 2025
             </div>
           </div>
-          <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6">
-            {/* <h2 className="text-2xl mb-4 font-bold">PUZZLE PROVING</h2> */}
+          <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-4">
             <div className="flex justify-between md:items-center">
-              <div className="flex gap-4">
+              <div className="flex gap-4 pt-2">
                 <button
                   disabled={false}
                   className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
@@ -118,10 +120,14 @@ function Component() {
                     toast.success('Solution verified');
                   }}
                 >
-                  <ListChecksIcon className="w-6 h-6 inline-block" /> CHECK
+                  <ListChecksIcon className="w-6 h-6 inline-block" /> PROVE PUZZLE
                 </button>
               </div>
               <div className="flex gap-4">
+                <div className="flex justify-end items-center gap-2">
+                  <Swords className="w-6 h-6 inline-block" />
+                  <span className="text-4xl micro-5-regular font-bold">{connectionCount}</span>
+                </div>
                 <button
                   onClick={() => {
                     // Add a timestamp to the end of the current href
@@ -163,12 +169,8 @@ function Component() {
                   }}
                   className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
                 >
-                  <Share2Icon className="w-6 h-6 inline-block" /> SHARE
+                  <Share2Icon className="w-6 h-6 inline-block" />
                 </button>
-                {/* <div className="flex items-center gap-2">
-                  <Swords className="w-6 h-6 inline-block" />
-                  <p className="text-sm">1000</p>
-                </div> */}
               </div>
             </div>
           </div>

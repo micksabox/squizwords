@@ -1,0 +1,10 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "squizword-vite-party",
+  "main": "party/main.ts",
+  "parties": {
+    "counter": "party/counter.ts",
+    "page": "party/page.ts"
+  },
+  "compatibilityDate": "2025-05-07"
+}
