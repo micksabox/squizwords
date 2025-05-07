@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import { GuardianCrossword, GuessGrid, Char } from '../../mycrossword/lib/types.js';
-import { calculateSortedGuessesHash, MAX_SOLUTION_WORDS, prepareHashInput } from './gamecheck.js';
+import { calculateSortedGuessesHash, MAX_SOLUTION_WORDS, prepareCircuitInput } from './gamecheck.js';
 import { getGameClueGuesses } from './gamegrid.js';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 import { encodeStringToField } from './encoding.js';
@@ -143,15 +143,17 @@ describe('calculateSortedGuessesHash', () => {
   it('should calculate the correct hash for a fully and correctly guessed grid', () => {
     // Uses simpleGameData and simpleSolvedGrid defined above
     const expectedSortedGuesses = ["ADE", "ABC"]; // From previous logic: 1-down, 1-across
-    // Calculate expected hash directly using the correct logic
-    const encodedFields = expectedSortedGuesses.map(g => encodeStringToField(g));
-    const paddedFields = Array(MAX_SOLUTION_WORDS).fill(0n);
-    for (let i = 0; i < encodedFields.length; i++) {
-      paddedFields[i] = encodedFields[i];
+    
+    // Calculate expected hash directly
+    const encodedFieldsExpected = expectedSortedGuesses.map(g => encodeStringToField(g));
+    const paddedFieldsExpected = Array(MAX_SOLUTION_WORDS).fill(0n);
+    for (let i = 0; i < encodedFieldsExpected.length; i++) {
+      paddedFieldsExpected[i] = encodedFieldsExpected[i];
     }
-    const expectedHash = poseidon2Hash(paddedFields);
+    const expectedHash = poseidon2Hash(paddedFieldsExpected);
 
-    const actualHash = calculateSortedGuessesHash(simpleGameData, simpleSolvedGrid);
+    const clueGuesses = getGameClueGuesses(simpleGameData, simpleSolvedGrid);
+    const actualHash = calculateSortedGuessesHash(simpleGameData, clueGuesses);
     expect(actualHash).toEqual(expectedHash);
   });
 
@@ -167,7 +169,8 @@ describe('calculateSortedGuessesHash', () => {
     }
     const expectedHash = poseidon2Hash(paddedFields);
 
-    const actualHash = calculateSortedGuessesHash(simpleGameData, simplePartialGrid);
+    const clueGuesses = getGameClueGuesses(simpleGameData, simplePartialGrid);
+    const actualHash = calculateSortedGuessesHash(simpleGameData, clueGuesses);
     expect(actualHash).toEqual(expectedHash);
   });
 
@@ -183,7 +186,8 @@ describe('calculateSortedGuessesHash', () => {
     }
     const expectedHash = poseidon2Hash(paddedFields);
 
-    const actualHash = calculateSortedGuessesHash(simpleGameData, emptyGrid);
+    const clueGuesses = getGameClueGuesses(simpleGameData, emptyGrid);
+    const actualHash = calculateSortedGuessesHash(simpleGameData, clueGuesses);
     expect(actualHash).toEqual(expectedHash);
   });
 
@@ -199,7 +203,8 @@ describe('calculateSortedGuessesHash', () => {
     }
     const expectedHash = poseidon2Hash(paddedFields);
 
-    const actualHash = calculateSortedGuessesHash(simpleGameData, partialGrid);
+    const clueGuesses = getGameClueGuesses(simpleGameData, partialGrid);
+    const actualHash = calculateSortedGuessesHash(simpleGameData, clueGuesses);
     expect(actualHash).toEqual(expectedHash);
   });
 
@@ -215,7 +220,8 @@ describe('calculateSortedGuessesHash', () => {
     }
     const expectedHash = poseidon2Hash(paddedFields);
 
-    const actualHash = calculateSortedGuessesHash(mockGameDataWithSymbolsFixed, mockGridWithSymbolsFixed);
+    const clueGuesses = getGameClueGuesses(mockGameDataWithSymbolsFixed, mockGridWithSymbolsFixed);
+    const actualHash = calculateSortedGuessesHash(mockGameDataWithSymbolsFixed, clueGuesses);
     expect(actualHash).toEqual(expectedHash);
   });
 
@@ -227,11 +233,12 @@ describe('calculateSortedGuessesHash', () => {
     expect(circuit, 'Circuit should be defined. Run `nargo compile` in packages/noir to compile the circuit.').toBeDefined();
 
     // 2. Calculate the expected hash for a known correct solution
-    const correctHashBigInt = calculateSortedGuessesHash(simpleGameData, simpleSolvedGrid);
+    const clueGuesses = getGameClueGuesses(simpleGameData, simpleSolvedGrid); // Get clue guesses
+    const correctHashBigInt = calculateSortedGuessesHash(simpleGameData, clueGuesses); // Use clue guesses
     // Convert BigInt to hex string (remove 0n suffix and add 0x prefix)
     const correctHashHex = `0x${correctHashBigInt.toString(16)}`;
     // 3. Prepare inputs for the Noir circuit
-    const solutionWords = prepareHashInput(["ADE", "ABC"]);
+    const solutionWords = prepareCircuitInput(["ADE", "ABC"]);
     //    Assuming the public input is named 'solution_root' in main.nr
     const inputs: InputMap = {
       solution_words: solutionWords.map(word => word.toString()),
