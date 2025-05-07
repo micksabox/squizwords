@@ -34,6 +34,14 @@ export const useSquizwordsParty = (gameSlug: string = 'linktotheproofs') => {
     },
   });
 
+  ws.onopen = () => {
+    // Subscribe to the connection count of the game and request the initial connection count
+    ws.send(JSON.stringify({
+      type: 'subscribe',
+      links: [gameSlug]
+    }));
+  };
+
   return {
     connectionCount,
     ws,
