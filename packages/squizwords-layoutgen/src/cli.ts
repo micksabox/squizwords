@@ -48,11 +48,12 @@ type GuardianClue = {
   solutionPoseidonHash?: string;
 };
 
-type GuardianCrossword = {
+export type GuardianCrossword = {
   creator?: {
     name: string;
     webUrl: string;
-  };
+  }; 
+  puzzleSolutionHash: string;
   crosswordType:
     | 'cryptic'
     | 'quick'
@@ -249,8 +250,7 @@ program
 
                     const solutionHash = `0x${poseidon2Hash(sortedGuesses.map(guess => BigInt(stringToHex(guess)))).toString(16)}`;
                   
-                    console.log('solutionHash', solutionHash);
-
+                    // console.log(`\nsolutionHash ${solutionHash}\n`);
 
                     // Map directly from result.layout (which is LayoutData[])
                     const entries: GuardianClue[] = result.layout
@@ -310,6 +310,7 @@ program
                         date: Date.now(), // Use current timestamp for date field
                         dimensions: dimensions,
                         entries: entries,
+                        puzzleSolutionHash: solutionHash,
                         id: String(Date.now()), // Use string timestamp integer for ID field
                         name: `Generated Layout ${index + 1}`, // Simple name
                         number: index + 1, // Use the layout index

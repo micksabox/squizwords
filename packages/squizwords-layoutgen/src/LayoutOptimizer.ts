@@ -60,12 +60,53 @@ export class LayoutOptimizer {
         this.currentIteration = 0;
         this.triedPermutations.clear();
 
-        // Array to be shuffled contains ClueInput objects
-        let currentCluePermutation = [...this.inputClues];
         // Keep original answers separately for evaluation checks
         const originalAnswers = this.inputClues.map(item => item.answer);
 
         console.log(`Starting layout optimization. Target: ${this.numLayoutsToGenerate} layouts, Max iterations: ${this.maxIterations}`);
+
+        // --- Attempt 1: Sorted by answer ---
+        if (this.inputClues.length > 0 && this.maxIterations > 0 && this.acceptableLayouts.length < this.numLayoutsToGenerate) {
+            this.currentIteration++;
+            const sortedCluePermutation = [...this.inputClues].sort((a, b) => a.answer.localeCompare(b.answer));
+            const sortedPermutationKey = sortedCluePermutation.map(c => c.answer).join(',');
+
+            console.log(`Iteration ${this.currentIteration}/${this.maxIterations}: Trying initial sorted permutation: ${sortedPermutationKey}`);
+            this.triedPermutations.add(sortedPermutationKey);
+
+            try {
+                const generatedLayout = await Promise.resolve(this.layoutGenerator(sortedCluePermutation));
+                const evaluationResult = this.evaluateLayout(generatedLayout, originalAnswers);
+
+                if (evaluationResult.isAcceptable) {
+                    console.log(`Iteration ${this.currentIteration}: Found acceptable layout (${this.acceptableLayouts.length + 1}/${this.numLayoutsToGenerate}) from sorted permutation.`);
+                    const grid = this.generateGrid(generatedLayout);
+                    this.acceptableLayouts.push({
+                        layout: generatedLayout,
+                        grid: grid,
+                        permutation: [...sortedCluePermutation]
+                    });
+                } else if (evaluationResult.criticalIssues.length > 0) {
+                    console.log(`Iteration ${this.currentIteration}: Critical issues found in sorted permutation: ${evaluationResult.criticalIssues.join('; ')}`);
+                    this.failedPermutations.push({
+                        permutation: [...sortedCluePermutation],
+                        errors: evaluationResult.criticalIssues
+                    });
+                } else {
+                    console.log(`Iteration ${this.currentIteration}: Sorted permutation generated but has suboptimal issues: ${evaluationResult.suboptimalIssues.join('; ')}`);
+                }
+            } catch (error) {
+                console.error(`Iteration ${this.currentIteration}: Error during layout generation or evaluation for sorted permutation key [${sortedPermutationKey}]:`, error);
+                this.failedPermutations.push({
+                    permutation: [...sortedCluePermutation],
+                    errors: [`Generator/Evaluation Error: ${error instanceof Error ? error.message : String(error)}`]
+                });
+            }
+        }
+
+        // --- Subsequent attempts: Shuffled permutations ---
+        // Array to be shuffled contains ClueInput objects
+        let currentCluePermutation = [...this.inputClues];
 
         while (
             this.acceptableLayouts.length < this.numLayoutsToGenerate &&
@@ -82,8 +123,22 @@ export class LayoutOptimizer {
             // Skip if this answer order has been tried
             if (this.triedPermutations.has(permutationKey)) {
                 console.warn(`Iteration ${this.currentIteration}: Skipping duplicate permutation key: ${permutationKey}`);
-                if (this.triedPermutations.size >= this.factorial(this.inputClues.length)) {
+                // Check if all permutations might have been tried. This check is more complex now
+                // as the total number of unique permutations is factorial(N)
+                // and we have triedPermutations.size.
+                // A simple check: if triedPermutations.size is very large, close to factorial(N), then break.
+                // This threshold can be adjusted. For small N, factorial(N) is manageable.
+                const estimatedMaxPermutations = this.factorial(this.inputClues.length);
+                if (this.inputClues.length > 0 && this.triedPermutations.size >= estimatedMaxPermutations) {
                     console.warn("All possible answer permutations seem to have been tried.");
+                    break;
+                }
+                // To prevent infinite loops if shuffling somehow consistently produces seen permutations
+                // before maxIterations is reached with few unique items, we add a safety break.
+                // This condition can be refined. If currentIteration is much larger than triedPermutations.size
+                // and we are not finding new ones. For now, just continue.
+                if (this.currentIteration >= this.maxIterations) { // Ensure loop termination if stuck
+                    console.warn("Max iterations reached while potentially stuck on duplicate permutations.");
                     break;
                 }
                 continue;
@@ -133,7 +188,7 @@ Optimization finished after ${this.currentIteration} iterations.`);
         if (this.failedPermutations.length > 0) {
             console.log(`${this.failedPermutations.length} permutations resulted in critical errors or exceptions.`);
         }
-        if (this.acceptableLayouts.length < this.numLayoutsToGenerate && this.currentIteration === this.maxIterations) {
+        if (this.acceptableLayouts.length < this.numLayoutsToGenerate && this.currentIteration >= this.maxIterations) {
             console.warn(`Target number of layouts (${this.numLayoutsToGenerate}) not reached within the maximum iterations (${this.maxIterations}).`);
         }
     }
