@@ -57,8 +57,8 @@ describe('getGameClueGuesses', () => {
     };
 
     const expectedGuesses = [
-      { id: '1-down', guess: 'DOG' },
-      { id: '2-across', guess: 'AGE' },
+      { id: '1-down', guess: 'DOG', number: 1 },
+      { id: '2-across', guess: 'AGE', number: 2 },
     ];
 
     const actualGuesses = getGameClueGuesses(gameData, grid);
@@ -116,8 +116,8 @@ describe('getGameClueGuesses', () => {
 
 
     const expectedGuesses = [
-      { id: '1-across', guess: 'YOYO' }, // Corrected expectation based on grid
-      { id: '1-down', guess: 'Y LLOW' }, // Note the space for the empty cell
+      { id: '1-across', guess: 'YOYO', number: 1 }, // Corrected expectation based on grid
+      { id: '1-down', guess: 'Y LLOW', number: 1 }, // Note the space for the empty cell
     ];
 
     const actualGuesses = getGameClueGuesses(gameData, grid);
@@ -173,8 +173,8 @@ describe('getGameClueGuesses', () => {
     };
 
     const expectedGuesses = [
-      { id: '1-down', guess: 'DOG' },
-      { id: '2-across', guess: 'AGE' },
+      { id: '1-down', guess: 'DOG', number: 1 },
+      { id: '2-across', guess: 'AGE', number: 2 },
     ];
 
     const actualGuesses = getGameClueGuesses(gameData, grid);
@@ -228,8 +228,8 @@ describe('getGameClueGuesses', () => {
     };
 
     const expectedGuesses = [
-      { id: '1-down', guess: '' }, // Should get nothing as x=1 is out of bounds
-      { id: '2-across', guess: '' }, // Should get nothing as y=2 is out of bounds
+      { id: '1-down', guess: '', number: 1 }, // Should get nothing as x=1 is out of bounds
+      { id: '2-across', guess: '', number: 2 }, // Should get nothing as y=2 is out of bounds
     ];
 
     const actualGuesses = getGameClueGuesses(gameData, grid);
