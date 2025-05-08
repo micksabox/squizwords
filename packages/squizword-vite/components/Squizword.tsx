@@ -31,6 +31,14 @@ function playRandomSuccessSound() {
   playSound(soundFile);
 }
 
+const errorMessages = [
+  "Nope, that's not it. Try again!",
+  "Not quite! Keep trying.",
+  "Give it another shot!",
+  "That's not the one. Don't give up!",
+  "Incorrect. Why not ask a friend?"
+];
+
 type GuardianCrosswordWithSolutionHash = GuardianCrossword & { puzzleSolutionHash: string };
 
 function Component() {
@@ -113,13 +121,14 @@ function Component() {
                     setCircuitInput(inputs);
                   }}
                 >
-                  <ListChecksIcon className="w-6 h-6 inline-block" /> PROVE PUZZLE
+                  <ListChecksIcon className="w-6 h-6 inline-block" /> PROVE
                 </button>
               </div>
               <div className="flex gap-4">
-                <div className="flex justify-end items-center gap-2">
+                <div className="flex justify-end items-center gap-2 relative">
                   <Swords className="w-6 h-6 inline-block" />
                   <span className="text-4xl micro-5-regular font-bold">{connectionCount}</span>
+                  <span className="text-xs absolute -top-2 right-0">ONLINE</span>
                 </div>
                 <button
                   onClick={() => {
@@ -186,7 +195,8 @@ function Component() {
               toast.success('Correct!');
               playRandomSuccessSound();
             } else {
-              toast.error('Try again!');
+              const randomErrorMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+              toast.error(randomErrorMessage);
               playSound('/sound_effects/line_failure.mp3');
             }
           }}
