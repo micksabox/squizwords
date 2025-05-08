@@ -31,6 +31,9 @@ import {
   ListChecksIcon,
   AwardIcon,
   RadarIcon,
+  Copy,
+  TrophyIcon,
+  BlocksIcon,
 } from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
@@ -162,9 +165,32 @@ function Component() {
                 >
                   <ListChecksIcon className="w-16 text-green-300 h-16 inline-block" /> PROVE
                 </Button>
-                <Button className="micro-5-regular text-4xl p-6" variant="outline">
-                  <AwardIcon className="w-16  h-16 inline-block" /> CLAIM
-                </Button>
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button className="micro-5-regular text-4xl p-6" variant="outline">
+                      <AwardIcon className="w-16 h-16 inline-block" /> CLAIM
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle className="text-2xl text-center">Solution Claim</DrawerTitle>
+                      <DrawerDescription className="text-center">
+                        Your puzzle needs to be proved before continuing. Your solutions are kept secret using zero-knowledge proofs, so nobody will see the answers. Keep them secret; why would you inflate the supply of claims? You never know what use might be made of them.
+                        <br/>
+                        <BlocksIcon className="w-8 h-8 inline-block my-2" /><br/> Are you a builder or community interested in integrating this solution proof into your project?
+                        <br/><a href="https://x.com/squizwords" className="text-blue-500 underline">Contact on X</a>
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
+                      <Button onClick={() => {
+                        toast.info('Still working on this! Stay tuned and come back when it\'s ready. Thank you for all the support!');
+                      }}>Verify Proof & Claim</Button>
+                      <DrawerClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
               </div>
               <hr className="w-full border-t-2 border-gray-300 my-2" />
               <div className="flex gap-4">
@@ -238,13 +264,57 @@ function Component() {
                       >
                         Help me solve this puzzle
                       </Button>
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast.success('Link copied to clipboard!');
+                        }}
+                        variant="outline"
+                      >
+                        <Copy className="w-4 h-4 mr-2" /> Copy Link
+                      </Button>
                       <DrawerClose>
                         <Button variant="outline">Cancel</Button>
                       </DrawerClose>
                     </DrawerFooter>
                   </DrawerContent>
                 </Drawer>
-              </div>
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline">
+                      <TrophyIcon className="w-6 h-6 inline-block" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle className="text-2xl text-center">
+                        Leaderboard (Example)
+                      </DrawerTitle>
+                      <div className="flex justify-center my-4">
+                        <TrophyIcon className="w-16 h-16 text-yellow-500" />
+                      </div>
+                      <DrawerDescription className="text-center">
+                        Compete to race against time and be the first solver!
+                        <br/>Check out the current champions:
+                        <br />
+                        <br />
+                        <ul className="list-none p-0 m-0 text-left mx-auto w-fit">
+                          <li>🥇 ZekoTheSwift: 2m 15s</li>
+                          <li>🥈 PuzzleProdigy: 2m 45s</li>
+                          <li>🥉 WordWarrior: 3m 10s</li>
+                          <li>4. ClueConqueror: 3m 30s</li>
+                          <li>5. GridGenius: 3m 55s</li>
+                        </ul>
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
+                      <DrawerClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
+              </div> {/* end of toolbar */}
             </div>
           </div>
         </div>
