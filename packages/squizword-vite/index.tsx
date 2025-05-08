@@ -53,7 +53,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route element={<Layout />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/puzzle/:slug" element={<Squizword />} />
+          <Route path="/puzzles/:slug" element={<Squizword />} />
           </Route>
         </Routes>
         <ToastContainer />
