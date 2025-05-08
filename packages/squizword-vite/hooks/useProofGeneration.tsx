@@ -27,7 +27,7 @@ export function useProofGeneration(inputs?: { [key: string]: string | string[] }
     const { witness } = await toast.promise(noir.execute(inputs), {
       pending: 'Generating witness...',
       success: 'Witness generated!',
-      error: 'Error generating witness',
+      error: 'Computing witness failed! Did you finish the puzzle and enter the correct solutions?',
     });
 
     const data = await toast.promise(backend.generateProof(witness), {
