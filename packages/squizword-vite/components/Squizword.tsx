@@ -177,10 +177,10 @@ function Component() {
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">Solution Claim</DrawerTitle>
                       <DrawerDescription className="text-center">
-                        Your puzzle needs to be proved before continuing. Your solutions are kept secret using zero-knowledge proofs, so nobody will see the answers. Keep them secret; why would you inflate the supply of claims? You never know what use might be made of them.
+                        Your puzzle should be proved before continuing. Your solutions are proved locally using zero-knowledge proofs using <a href="https://noir-lang.org/" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Noir</a>, so nobody will see them. Keep them secret, keep them safe. Revealing the answers would inflate the supply of claims. You never know what use they might be put to...
                         <br/>
                         <BlocksIcon className="w-8 h-8 inline-block my-2" /><br/> Are you a builder or community interested in integrating this solution proof into your project?
-                        <br/><a href="https://x.com/squizwords" className="text-blue-500 underline">Contact on X</a>
+                        <br/><a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Contact on X</a>
                       </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
