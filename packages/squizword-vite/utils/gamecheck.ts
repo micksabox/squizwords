@@ -5,7 +5,7 @@ import { stringToHex } from 'viem';
 
 // Constant matching the Noir circuit
 // Exported for potential reuse or testing
-export const MAX_SOLUTION_WORDS = 100;
+export const MAX_SOLUTION_WORDS = 24;
 
 /**
  * Retrieves and sorts guesses based on clue direction and ID.
@@ -97,11 +97,10 @@ export const calculateSortedGuessesHash = (
  * @returns The padded array of encoded guesses
  */
 export function prepareCircuitInput(guesses: string[]): bigint[] {
-  const encodedFields = guesses.map(guess => stringToHex(guess));
-  const paddedFields = Array(MAX_SOLUTION_WORDS).fill("0");
-  // Copy encoded fields into the beginning of the padded array
-  for (let i = 0; i < encodedFields.length && i < MAX_SOLUTION_WORDS; i++) {
-      paddedFields[i] = encodedFields[i];
+  const encodedFields = guesses.map(guess => BigInt(stringToHex(guess)));
+  const paddedFields = Array(MAX_SOLUTION_WORDS).fill(0n);
+  for (let i = 0; i < encodedFields.length; i++) {
+    paddedFields[i] = encodedFields[i];
   }
   return paddedFields;
 }

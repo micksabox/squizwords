@@ -11,15 +11,12 @@ import { GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses, NULLISH_CELL } from '../utils/gamegrid.js';
 import { toast } from 'react-toastify';
 import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' };
-import {
-  calculateSortedGuessesHash,
-  getPaddedSortedGuesses,
-  prepareHashInput,
-} from '../utils/gamecheck.js';
+import { prepareCircuitInput } from '../utils/gamecheck.js';
 import { InputMap } from '@noir-lang/types';
 import heroImage from '/legendofzeku-2.png';
 import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
+import { stringToHex } from 'viem';
 
 function playSound(soundFile: string) {
   const audio = new Audio(soundFile);
@@ -32,11 +29,13 @@ function playRandomSuccessSound() {
   playSound(soundFile);
 }
 
+type GuardianCrosswordWithSolutionHash = GuardianCrossword & { puzzleSolutionHash: string };
+
 function Component() {
-  const data: GuardianCrossword = crosswordData as GuardianCrossword;
+  const data: GuardianCrosswordWithSolutionHash =
+    crosswordData as GuardianCrosswordWithSolutionHash;
 
   const [circuitInput, setCircuitInput] = useState<Record<string, string | string[]> | undefined>();
-  const [solutionHash, setSolutionHash] = useState<string>();
   const { noir, proofData, backend } = useProofGeneration(circuitInput);
   useOffChainVerification(backend!, noir, proofData);
 
@@ -46,42 +45,30 @@ function Component() {
 
   useEffect(
     function processUserGuesses() {
-      if (!userGuesses || !solutionHash) return;
+      if (!userGuesses) return;
 
-      // if any of the guesses has a space, the grid is invalid
-      if (userGuesses.length > 0 && userGuesses.some(g => g.includes(NULLISH_CELL))) {
-        // toast.error('Incomplete grid, please fill in all cells');
-        return;
-      }
+      // // if any of the guesses has a space, the grid is invalid
+      // if (userGuesses.length > 0 && userGuesses.some(g => g.includes(NULLISH_CELL))) {
+      //   // toast.error('Incomplete grid, please fill in all cells');
+      //   return;
+      // }
 
-      console.log('userGuesses', userGuesses);
+      // console.log('userGuesses', userGuesses);
 
-      const preparedCircuitInput = prepareHashInput(userGuesses);
+      // const preparedCircuitInput = prepareHashInput(userGuesses);
+      // console.log('preparedCircuitInput', preparedCircuitInput);
 
       const inputs: Record<string, string | string[]> = {
-        solution_words: preparedCircuitInput.map(word => word.toString()),
-        solution_root: solutionHash,
+        // solution_words: preparedCircuitInput.map(word => word.toString()),
+        solution_words: userGuesses,
+        solution_root: data.puzzleSolutionHash,
       };
 
-      console.log('preparedCircuitInput', preparedCircuitInput);
-
-      setCircuitInput(inputs);
+      // setCircuitInput(inputs);
+      // setCircuitInput(inputs);
     },
-    [userGuesses, solutionHash],
+    [userGuesses],
   );
-
-  // const verifyButton = useOnChainVerification(proofData);
-
-  // const submit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   const elements = e.currentTarget.elements;
-  //   if (!elements) return;
-
-  //   const word = elements.namedItem('word') as HTMLInputElement;
-  //   const solutionHash = elements.namedItem('solutionHash') as HTMLInputElement;
-
-  //   setInput({ word: word.value, solutionHash: solutionHash.value });
-  // };
 
   return (
     <>
@@ -116,8 +103,23 @@ function Component() {
                   disabled={false}
                   className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
                   onClick={() => {
-                    console.log('clicked');
-                    toast.success('Solution verified');
+                    if (!userGuesses) return;
+                    console.log('User guesses:', userGuesses);
+                    const hashedSolution = `0x${poseidon2Hash(userGuesses.map(ans => BigInt(stringToHex(ans)))).toString(16)}`;
+                    const preparedCircuitInput = prepareCircuitInput(userGuesses);
+
+                    console.log('Hashed solution using same method as backend:', hashedSolution);
+                    console.log('Prepared circuit input:', preparedCircuitInput);
+                    console.log('Prepared circuit input:', preparedCircuitInput.map(word => `0x${word.toString(16)}`));
+
+                    const inputs: Record<string, string | string[]> = {
+                      solution_words: preparedCircuitInput.map(word => word.toString()),
+                      // solution_root: "0x1dacdcd15d884ebf41e58a011759d1c4983a1e693100471a140d997fd38c998b", // JS created
+                      // solution_root: "0x252abd3faa3cc3b09ca7810582dd4198bda570e5669b3522bccd905805f71f50" // Nargo test output
+                      solution_root: "0x092aadd058f7d7b407c15cd806c93b0fb8923618413514109e9133db160b6503" // Nargo test output 24 max words
+                    };
+
+                    setCircuitInput(inputs);
                   }}
                 >
                   <ListChecksIcon className="w-6 h-6 inline-block" /> PROVE PUZZLE
@@ -177,16 +179,15 @@ function Component() {
         </div>
         <MyCrossword
           onGridChange={(grid: GuessGrid) => {
-            const guessGrid = getGameClueGuesses(data, grid);
+            const guesses = getGameClueGuesses(data, grid);
 
-            // const paddedSortedGuesses = getPaddedSortedGuesses(data, grid);
-            // const solutionHash = `0x${calculateSortedGuessesHash(data, grid).toString(16)}`;
+            const sorted = guesses.sort((a, b) => a.guess.localeCompare(b.guess));
+            // console.log('Sorted guesses:', sorted);
 
             // console.log('Grid changed:', guessGrid);
             // console.log('Padded sorted guesses:', paddedSortedGuesses);
-            // console.log('Solution hash:', solutionHash);
-            // setUserGuesses(paddedSortedGuesses);
-            // setSolutionHash(solutionHash);
+            // console.log('Fixed game solution hash', data.puzzleSolutionHash);
+            setUserGuesses(sorted.map(ans => ans.guess));
           }}
           onClueHashCheckResult={(clueId: string, result: boolean) => {
             console.log(clueId, result);
