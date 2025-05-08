@@ -3,6 +3,7 @@ import React from 'react';
 import { type GuardianCrossword, MyCrossword } from 'mycrossword';
 import 'mycrossword/style.css';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
+import { useParams } from 'react-router';
 
 // import { useOnChainVerification } from '../hooks/useOnChainVerification.js';
 import { useProofGeneration } from '../hooks/useProofGeneration.jsx';
@@ -10,13 +11,14 @@ import { useOffChainVerification } from '../hooks/useOffChainVerification.jsx';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
 import { getGameClueGuesses, NULLISH_CELL } from '../utils/gamegrid.js';
 import { toast } from 'react-toastify';
-import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' };
+// import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' }; // Will load dynamically
 import { prepareCircuitInput } from '../utils/gamecheck.js';
 import { InputMap } from '@noir-lang/types';
 import heroImage from '/legendofzeku-2.png';
 import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
+import { useCrosswordLoader } from '../hooks/useCrosswordLoader.js';
 
 function playSound(soundFile: string) {
   const audio = new Audio(soundFile);
@@ -32,8 +34,8 @@ function playRandomSuccessSound() {
 type GuardianCrosswordWithSolutionHash = GuardianCrossword & { puzzleSolutionHash: string };
 
 function Component() {
-  const data: GuardianCrosswordWithSolutionHash =
-    crosswordData as GuardianCrosswordWithSolutionHash;
+  const { slug } = useParams<{ slug: string }>(); // Get slug from URL
+  const { crosswordData, isLoading, error } = useCrosswordLoader(slug);
 
   const [circuitInput, setCircuitInput] = useState<Record<string, string | string[]> | undefined>();
   const { noir, proofData, backend } = useProofGeneration(circuitInput);
@@ -41,49 +43,34 @@ function Component() {
 
   const [userGuesses, setUserGuesses] = useState<string[]>();
 
-  const { connectionCount } = useSquizwordsParty('linktotheproofs');
+  const { connectionCount } = useSquizwordsParty(slug || 'default-party'); // Use slug for party room
 
-  useEffect(
-    function processUserGuesses() {
-      if (!userGuesses) return;
 
-      // // if any of the guesses has a space, the grid is invalid
-      // if (userGuesses.length > 0 && userGuesses.some(g => g.includes(NULLISH_CELL))) {
-      //   // toast.error('Incomplete grid, please fill in all cells');
-      //   return;
-      // }
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-2xl">
+          {slug ? `Loading puzzle: ${slug}...` : 'No puzzle selected.'}
+        </div>
+      </div>
+    );
+  }
 
-      // console.log('userGuesses', userGuesses);
+  if (error || !crosswordData) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-2xl">
+          {error || (slug ? `Failed to load puzzle: ${slug}.` : 'No puzzle selected or failed to load.')}
+        </div>
+      </div>
+    );
+  }
 
-      // const preparedCircuitInput = prepareHashInput(userGuesses);
-      // console.log('preparedCircuitInput', preparedCircuitInput);
-
-      const inputs: Record<string, string | string[]> = {
-        // solution_words: preparedCircuitInput.map(word => word.toString()),
-        solution_words: userGuesses,
-        solution_root: data.puzzleSolutionHash,
-      };
-
-      // setCircuitInput(inputs);
-      // setCircuitInput(inputs);
-    },
-    [userGuesses],
-  );
+  // All references to `data` below should be changed to `crosswordData`
+  const data = crosswordData; // Keep using `data` variable name for minimal diff for now
 
   return (
     <>
-      <div className="bg-black py-2">
-        <div className="max-w-screen-lg mx-auto flex items-center ">
-          <img
-            src="/crossword_squid_template_7.png"
-            alt="squizword"
-            className="w-12 mr-2 ml-2 lg:ml-0 h-12 -scale-x-100"
-          />
-          <h1 className="text-6xl micro-5-regular text-white font-bold">SQUIZWORDS</h1>
-          {/* <img src="/crossword_squid_template_7.png" alt="squizword" className="w-12 h-12" /> */}
-        </div>
-      </div>
-
       <div className="max-w-screen-lg mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2 items-center">
           <div className="relative">
@@ -110,13 +97,17 @@ function Component() {
 
                     console.log('Hashed solution using same method as backend:', hashedSolution);
                     console.log('Prepared circuit input:', preparedCircuitInput);
-                    console.log('Prepared circuit input:', preparedCircuitInput.map(word => `0x${word.toString(16)}`));
+                    console.log(
+                      'Prepared circuit input:',
+                      preparedCircuitInput.map(word => `0x${word.toString(16)}`),
+                    );
 
                     const inputs: Record<string, string | string[]> = {
                       solution_words: preparedCircuitInput.map(word => word.toString()),
                       // solution_root: "0x1dacdcd15d884ebf41e58a011759d1c4983a1e693100471a140d997fd38c998b", // JS created
                       // solution_root: "0x252abd3faa3cc3b09ca7810582dd4198bda570e5669b3522bccd905805f71f50" // Nargo test output
-                      solution_root: "0x092aadd058f7d7b407c15cd806c93b0fb8923618413514109e9133db160b6503" // Nargo test output 24 max words
+                      solution_root:
+                        '0x092aadd058f7d7b407c15cd806c93b0fb8923618413514109e9133db160b6503', // Nargo test output 24 max words
                     };
 
                     setCircuitInput(inputs);
@@ -155,7 +146,7 @@ function Component() {
                       navigator
                         .share({
                           title: 'Play Squizwords Now',
-                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'} with zero knowledge proofs!`,
+                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'}.`,
                           url: shareUrl,
                         })
                         .catch(error => {

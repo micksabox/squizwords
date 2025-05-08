@@ -7,12 +7,15 @@ import initACVM from '@noir-lang/acvm_js';
 // @ts-ignore
 await Promise.all([initACVM(fetch(acvm)), initNoirC(fetch(noirc))]);
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import Component from './components/Squizword.jsx';
+import Squizword from './components/Squizword.jsx';
+import Homepage from './components/Homepage.jsx';
+import Layout from './components/Layout.jsx';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { defineChain, createClient } from 'viem';
@@ -44,8 +47,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <Providers>
-    <Component />
-    <ToastContainer />
-  </Providers>,
+  <React.StrictMode>
+    <Providers>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/puzzles/:slug" element={<Squizword />} />
+          </Route>
+        </Routes>
+        <ToastContainer />
+      </BrowserRouter>
+    </Providers>
+  </React.StrictMode>,
 );
