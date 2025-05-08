@@ -182,7 +182,7 @@ function Component() {
                         {connectionCount <= 1
                           ? "Questing Solo?"
                           : connectionCount < 10
-                          ? "Intrepid Party!"
+                          ? "Fellowship of the Squiz!"
                           : "Massive Raid!"}
                       </DrawerTitle>
                       <DrawerDescription className="text-center">
