@@ -174,7 +174,7 @@ function Component() {
                       <AwardIcon className="w-16 h-16 inline-block" /> CLAIM
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent>
+                  <DrawerContent className="max-w-2xl mx-auto">
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">Solution Claim</DrawerTitle>
                       <DrawerDescription className="text-center">
@@ -186,7 +186,7 @@ function Component() {
                     </DrawerHeader>
                     <DrawerFooter>
                       <Button onClick={() => {
-                        toast.info('Still working on this! Stay tuned and come back when it\'s ready. Thank you for all the support!');
+                        toast.info('Still working on this! Don\'t worry, your solutions are safe. Come back soon. Thank you for any and all support!');
                       }}>Verify Proof & Claim</Button>
                       <DrawerClose asChild>
                         <Button variant="outline">Close</Button>
@@ -205,7 +205,7 @@ function Component() {
                       <span className="text-xs">ONLINE</span>
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent>
+                  <DrawerContent className="max-w-2xl mx-auto">
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">
                         {connectionCount <= 1
@@ -240,7 +240,7 @@ function Component() {
                       <Share2Icon className="w-6 h-6 inline-block" />
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent>
+                  <DrawerContent className="max-w-2xl mx-auto">
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">
                       <img src={slingSquiz} alt="Sling Squiz" className="w-32 mx-auto" />
@@ -288,7 +288,7 @@ function Component() {
                       <TrophyIcon className="w-6 h-6 inline-block" />
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent>
+                  <DrawerContent className="max-w-2xl mx-auto">
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">
                         Leaderboard (Example)
