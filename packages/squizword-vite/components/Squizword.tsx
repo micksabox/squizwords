@@ -1,5 +1,5 @@
-import {  useState } from 'react';
-import {  MyCrossword } from 'mycrossword';
+import { useState } from 'react';
+import { MyCrossword } from 'mycrossword';
 import 'mycrossword/style.css';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 import { useParams } from 'react-router';
@@ -25,7 +25,13 @@ import { Button } from '@/components/ui/button';
 // import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' }; // Will load dynamically
 import { prepareCircuitInput } from '../utils/gamecheck.js';
 import heroImage from '/legendofzeku.webp';
-import { Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
+import slingSquiz from '/slingsquiz.png';
+import {
+  Share2Icon,
+  ListChecksIcon,
+  AwardIcon,
+  RadarIcon,
+} from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
 import { useCrosswordLoader } from '../hooks/useCrosswordLoader.js';
@@ -63,7 +69,6 @@ function Component() {
   const { connectionCount } = useSquizwordsParty(slug || 'default-party'); // Use slug for party room
 
   const shareWithMessage = (message: string, url: string) => {
-
     let shareUrl = url;
 
     let matchingClue = null;
@@ -86,7 +91,7 @@ function Component() {
       navigator.clipboard.writeText(shareUrl);
       toast.success('Link copied to clipboard!');
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -127,8 +132,8 @@ function Component() {
             </div>
           </div>
           <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-4">
-            <div className="flex justify-between md:items-center">
-              <div className="flex gap-4">
+            <div className="flex-col gap-8 justify-between md:items-center">
+              <div id="toolbar" className="grid grid-cols-2 gap-4">
                 <Button
                   className="micro-5-regular text-4xl p-6"
                   onClick={() => {
@@ -157,24 +162,82 @@ function Component() {
                 >
                   <ListChecksIcon className="w-16 text-green-300 h-16 inline-block" /> PROVE
                 </Button>
+                <Button className="micro-5-regular text-4xl p-6" variant="outline">
+                  <AwardIcon className="w-16  h-16 inline-block" /> CLAIM
+                </Button>
               </div>
+              <hr className="w-full border-t-2 border-gray-300 my-2" />
               <div className="flex gap-4">
-                <div className="flex justify-end items-center gap-2 relative">
-                  <Swords className="w-6 h-6 inline-block" />
-                  <span className="text-4xl micro-5-regular font-bold">{connectionCount}</span>
-                  <span className="text-xs absolute -top-2 right-0">ONLINE</span>
-                </div>
                 <Drawer>
-                  <DrawerTrigger asChild><Button variant="secondary" ><Share2Icon className="w-6 h-6 inline-block" /></Button ></DrawerTrigger>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" className="p-0">
+                      <RadarIcon className="w-6 h-6 animate-pulse inline-block" />
+                      <span className="text-4xl micro-5-regular font-bold">{connectionCount}</span>
+                      <span className="text-xs">ONLINE</span>
+                    </Button>
+                  </DrawerTrigger>
                   <DrawerContent>
                     <DrawerHeader>
-                      <DrawerTitle className="text-2xl text-center">It's dangerous to go alone! Use this.</DrawerTitle>
-                      <DrawerDescription className="text-center">Share one of these links to get help from your friends.</DrawerDescription>
+                      <DrawerTitle className="text-2xl text-center">
+                        {connectionCount <= 1
+                          ? "Questing Solo?"
+                          : connectionCount < 10
+                          ? "Intrepid Party!"
+                          : "Massive Raid!"}
+                      </DrawerTitle>
+                      <DrawerDescription className="text-center">
+                        {connectionCount <= 1
+                          ? "It seems you're on a solo adventure! Don't be shy, share the challenge and gather your fellowship. More minds mean more fun!"
+                          : connectionCount < 10
+                          ? `You're tackling this puzzle with ${connectionCount} fellow solver${
+                              connectionCount === 1 ? '' : 's'
+                            }. A cozy group with great odds of success!`
+                          : `Wow, ${connectionCount} players online! You're part of a huge collective effort. This puzzle is about to be conquered!`}
+                        {connectionCount === 1 && (
+                          <Share2Icon className="w-5 h-5 inline-block ml-2" aria-label="Share icon" />
+                        )}
+                      </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
-
-                      <Button onClick={() => shareWithMessage(`Help me solve this clue.`, window.location.href)}>Help me solve this clue</Button>
-                      <Button variant="outline" onClick={() => shareWithMessage(`Help me solve this puzzle.`, window.location.href)}>Help me solve this puzzle</Button>
+                      <DrawerClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline">
+                      <Share2Icon className="w-6 h-6 inline-block" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle className="text-2xl text-center">
+                      <img src={slingSquiz} alt="Sling Squiz" className="w-32 mx-auto" />
+                        It's dangerous to go alone! Use this.
+                      </DrawerTitle>
+                      <DrawerDescription className="text-center">
+                        Share a link to get help from your friends, or play together as a world-wide party.
+                        
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
+                      <Button
+                        onClick={() =>
+                          shareWithMessage(`Help me solve this clue.`, window.location.href)
+                        }
+                      >
+                        Help me solve this clue
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          shareWithMessage(`Help me solve this puzzle.`, window.location.href)
+                        }
+                      >
+                        Help me solve this puzzle
+                      </Button>
                       <DrawerClose>
                         <Button variant="outline">Cancel</Button>
                       </DrawerClose>
