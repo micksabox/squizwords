@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import AddToHomeScreen from './AddToHomeScreen';
 
 // Define the Puzzle type based on puzzle-schema.md
 interface Puzzle {
@@ -79,6 +80,7 @@ const Homepage: React.FC = () => {
           </ul>
         )}
       </div>
+      <AddToHomeScreen />
     </div>
   );
 };
