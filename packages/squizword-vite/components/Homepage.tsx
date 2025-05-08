@@ -32,16 +32,16 @@ const crosswordFiles: Puzzle[] = [
 const Homepage: React.FC = () => {
   return (
     <div className="max-w-screen-lg mx-auto">
-      <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-6">
+      <div className="bg-slate-100 p-6">
         <h2 className="text-5xl micro-5-regular text-black font-bold mb-6 text-center">
-          CHOOSE PUZZLE
+          SELECT PUZZLE
         </h2>
         {crosswordFiles.length === 0 ? (
           <p className="text-center text-gray-600">
             No puzzles available at the moment. Check back soon!
           </p>
         ) : (
-          <ul className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {crosswordFiles.map(puzzle => (
               <li
                 key={puzzle.slug}
@@ -53,7 +53,7 @@ const Homepage: React.FC = () => {
                       </span>
                     )}
                 {puzzle.imageUrl && (
-                  <Link className="w-full md:flex-1" to={`/puzzles/${puzzle.slug}`}>
+                  <Link className="w-full md:flex-1" to={`/puzzles/${puzzle.slug}/`}>
                     <img
                       src={puzzle.imageUrl}
                       alt={puzzle.name}
@@ -71,6 +71,11 @@ const Homepage: React.FC = () => {
                 </div> */}
               </li>
             ))}
+            <li className="border-4 border-dashed border-gray-300 p-4 rounded-lg hover:border-gray-400 text-center transition-colors duration-300 ease-in-out flex flex-col md:items-center justify-center min-h-[200px] cursor-pointer">
+                <span className="text-5xl text-gray-500 font-semibold micro-5-regular">PUZZLE BUILDER</span>
+                <p className="text-gray-700 mt-2">Want to build and share a puzzle for your community?</p>
+                <a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-gray-100 bg-black px-4 py-2 rounded-md mt-2">Contact</a>
+            </li>
           </ul>
         )}
       </div>
