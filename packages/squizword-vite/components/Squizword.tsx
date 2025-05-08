@@ -39,6 +39,14 @@ const errorMessages = [
   "Incorrect. Why not ask a friend?"
 ];
 
+const successMessages = [
+  "Great job!",
+  "You got it!",
+  "Excellent!",
+  "Correct!",
+  "Well done!"
+];
+
 type GuardianCrosswordWithSolutionHash = GuardianCrossword & { puzzleSolutionHash: string };
 
 function Component() {
@@ -192,7 +200,8 @@ function Component() {
           onClueHashCheckResult={(clueId: string, result: boolean) => {
             console.log(clueId, result);
             if (result) {
-              toast.success('Correct!');
+              const randomSuccessMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+              toast.success(randomSuccessMessage);
               playRandomSuccessSound();
             } else {
               const randomErrorMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
