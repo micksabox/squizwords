@@ -20,6 +20,17 @@ const Layout: React.FC<{}> = () => {
         </div>
       </div>
       <Outlet />
+      <p className="text-center text-sm text-gray-500">Acknowledgements</p>
+      <ul className="text-center text-sm text-gray-500">
+        <li>
+          <a href="https://github.com/t-blackwell/mycrossword" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+            https://github.com/t-blackwell/mycrossword
+          </a>
+        </li>
+        <a href="https://github.com/MichaelWehar/Crossword-Layout-Generator" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+          https://github.com/MichaelWehar/Crossword-Layout-Generator
+        </a>
+      </ul>
     </>
   );
 };
