@@ -34,6 +34,7 @@ import {
   Copy,
   TrophyIcon,
   BlocksIcon,
+  ExternalLink,
 } from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
@@ -177,10 +178,10 @@ function Component() {
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">Solution Claim</DrawerTitle>
                       <DrawerDescription className="text-center">
-                        Your puzzle should be proved before continuing. Your solutions are proved locally using zero-knowledge proofs using <a href="https://noir-lang.org/" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Noir</a>, so nobody will see them. Keep them secret, keep them safe. Revealing the answers would inflate the supply of claims. You never know what use they might be put to...
+                        Your puzzle should be proved before continuing. Your solutions are proved privately on your device using <a href="https://noir-lang.org/" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Noir <ExternalLink className="w-4 h-4 inline-block" /></a>, so nobody will see them. Keep them secret, keep them safe. Revealing the answers would inflate the supply of claims. You never know what use they might be put to...
                         <br/>
-                        <BlocksIcon className="w-8 h-8 inline-block my-2" /><br/> Are you a builder or community interested in integrating this solution proof into your project?
-                        <br/><a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Contact on X</a>
+                        <BlocksIcon className="w-8 h-8 inline-block my-2" /><br/> Are you a builder or community interested in integrating <b>squizwords solution claims</b> into your project?
+                        <br/><a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Contact on X <ExternalLink className="w-4 h-4 inline-block" /></a>
                       </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
