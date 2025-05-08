@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite';
 import { cloudflare } from "@cloudflare/vite-plugin";
+import path from 'path';
 
 // Explicitly configure the React plugin
 const reactPlugin = react();
@@ -17,6 +18,11 @@ export default defineConfig({
     target: 'esnext',
     outDir: './dist',
     emptyOutDir: true,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
   },
   ssr: {
     // Ensure React is bundled for SSR/Worker, not externalized

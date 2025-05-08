@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import React from 'react';
-import { type GuardianCrossword, MyCrossword } from 'mycrossword';
+import {  useState } from 'react';
+import {  MyCrossword } from 'mycrossword';
 import 'mycrossword/style.css';
 import { poseidon2Hash } from '@zkpassport/poseidon2';
 import { useParams } from 'react-router';
@@ -9,17 +8,27 @@ import { useParams } from 'react-router';
 import { useProofGeneration } from '../hooks/useProofGeneration.jsx';
 import { useOffChainVerification } from '../hooks/useOffChainVerification.jsx';
 import { GuessGrid } from '../../mycrossword/lib/types.js';
-import { getGameClueGuesses, NULLISH_CELL } from '../utils/gamegrid.js';
+import { getGameClueGuesses } from '../utils/gamegrid.js';
 import { toast } from 'react-toastify';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+
 // import crosswordData from '../crosswords/linktotheproofs.json' assert { type: 'json' }; // Will load dynamically
 import { prepareCircuitInput } from '../utils/gamecheck.js';
-import { InputMap } from '@noir-lang/types';
-import heroImage from '/legendofzeku-2.png';
-import { GlobeIcon, TableIcon, Sword, Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
+import heroImage from '/legendofzeku.webp';
+import { Swords, Share2Icon, ListChecksIcon } from 'lucide-react';
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
 import { useCrosswordLoader } from '../hooks/useCrosswordLoader.js';
-
 function playSound(soundFile: string) {
   const audio = new Audio(soundFile);
   audio.play();
@@ -33,21 +42,13 @@ function playRandomSuccessSound() {
 
 const errorMessages = [
   "Nope, that's not it. Try again!",
-  "Not quite! Keep trying.",
-  "Give it another shot!",
+  'Not quite! Keep trying.',
+  'Give it another shot!',
   "That's not the one. Don't give up!",
-  "Incorrect. Why not ask a friend?"
+  'Incorrect. Why not ask a friend?',
 ];
 
-const successMessages = [
-  "Great job!",
-  "You got it!",
-  "Excellent!",
-  "Correct!",
-  "Well done!"
-];
-
-type GuardianCrosswordWithSolutionHash = GuardianCrossword & { puzzleSolutionHash: string };
+const successMessages = ['Great job!', 'You got it!', 'Excellent!', 'Correct!', 'Well done!'];
 
 function Component() {
   const { slug } = useParams<{ slug: string }>(); // Get slug from URL
@@ -61,6 +62,31 @@ function Component() {
 
   const { connectionCount } = useSquizwordsParty(slug || 'default-party'); // Use slug for party room
 
+  const shareWithMessage = (message: string, url: string) => {
+
+    let shareUrl = url;
+
+    let matchingClue = null;
+    // Parse hash and find matching clue
+    if (window.location.hash) {
+      const clueId = window.location.hash.slice(1); // Remove # prefix
+      matchingClue = data.entries.find((entry: any) => entry.id === clueId);
+      if (matchingClue) {
+        console.log('Found matching clue:', matchingClue.clue);
+      }
+    }
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Play Squizwords',
+        text: matchingClue ? `${message}: ${matchingClue.clue}` : message,
+        url: shareUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success('Link copied to clipboard!');
+    }
+  }
 
   if (isLoading) {
     return (
@@ -76,7 +102,8 @@ function Component() {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-2xl">
-          {error || (slug ? `Failed to load puzzle: ${slug}.` : 'No puzzle selected or failed to load.')}
+          {error ||
+            (slug ? `Failed to load puzzle: ${slug}.` : 'No puzzle selected or failed to load.')}
         </div>
       </div>
     );
@@ -101,10 +128,9 @@ function Component() {
           </div>
           <div className="bg-slate-200 xl:rounded-lg xl:shadow-lg p-4">
             <div className="flex justify-between md:items-center">
-              <div className="flex gap-4 pt-2">
-                <button
-                  disabled={false}
-                  className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+              <div className="flex gap-4">
+                <Button
+                  className="micro-5-regular text-4xl p-6"
                   onClick={() => {
                     if (!userGuesses) return;
                     console.log('User guesses:', userGuesses);
@@ -129,8 +155,8 @@ function Component() {
                     setCircuitInput(inputs);
                   }}
                 >
-                  <ListChecksIcon className="w-6 h-6 inline-block" /> PROVE
-                </button>
+                  <ListChecksIcon className="w-16 text-green-300 h-16 inline-block" /> PROVE
+                </Button>
               </div>
               <div className="flex gap-4">
                 <div className="flex justify-end items-center gap-2 relative">
@@ -138,49 +164,23 @@ function Component() {
                   <span className="text-4xl micro-5-regular font-bold">{connectionCount}</span>
                   <span className="text-xs absolute -top-2 right-0">ONLINE</span>
                 </div>
-                <button
-                  onClick={() => {
-                    // Add a timestamp to the end of the current href
-                    const timestampParam = `t=${Date.now()}`;
-                    let shareUrl = window.location.href;
-                    if (shareUrl.includes('?')) {
-                      shareUrl += `&${timestampParam}`;
-                    } else {
-                      shareUrl += `?${timestampParam}`;
-                    }
+                <Drawer>
+                  <DrawerTrigger asChild><Button variant="secondary" ><Share2Icon className="w-6 h-6 inline-block" /></Button ></DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle className="text-2xl text-center">It's dangerous to go alone! Use this.</DrawerTitle>
+                      <DrawerDescription className="text-center">Share one of these links to get help from your friends.</DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
 
-                    let matchingClue = null;
-                    // Parse hash and find matching clue
-                    if (window.location.hash) {
-                      const clueId = window.location.hash.slice(1); // Remove # prefix
-                      matchingClue = data.entries.find((entry: any) => entry.id === clueId);
-                      if (matchingClue) {
-                        console.log('Found matching clue:', matchingClue.clue);
-                      }
-                    }
-
-                    if (navigator.share) {
-                      navigator
-                        .share({
-                          title: 'Play Squizwords Now',
-                          text: `Let's solve ${matchingClue?.clue ? `this clue: ${matchingClue?.clue}` : 'this puzzle'}.`,
-                          url: shareUrl,
-                        })
-                        .catch(error => {
-                          console.error('Error sharing:', error);
-                        });
-                    } else {
-                      // Fallback for browsers that don't support sharing
-                      navigator.clipboard
-                        .writeText(shareUrl)
-                        .then(() => toast.success('Link copied to clipboard!'))
-                        .catch(console.error);
-                    }
-                  }}
-                  className="bg-black micro-5-regular text-4xl disabled:opacity-50 disabled:hover:bg-black disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-                >
-                  <Share2Icon className="w-6 h-6 inline-block" />
-                </button>
+                      <Button onClick={() => shareWithMessage(`Help me solve this clue.`, window.location.href)}>Help me solve this clue</Button>
+                      <Button variant="outline" onClick={() => shareWithMessage(`Help me solve this puzzle.`, window.location.href)}>Help me solve this puzzle</Button>
+                      <DrawerClose>
+                        <Button variant="outline">Cancel</Button>
+                      </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
               </div>
             </div>
           </div>
@@ -200,11 +200,13 @@ function Component() {
           onClueHashCheckResult={(clueId: string, result: boolean) => {
             console.log(clueId, result);
             if (result) {
-              const randomSuccessMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+              const randomSuccessMessage =
+                successMessages[Math.floor(Math.random() * successMessages.length)];
               toast.success(randomSuccessMessage);
               playRandomSuccessSound();
             } else {
-              const randomErrorMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+              const randomErrorMessage =
+                errorMessages[Math.floor(Math.random() * errorMessages.length)];
               toast.error(randomErrorMessage);
               playSound('/sound_effects/line_failure.mp3');
             }
