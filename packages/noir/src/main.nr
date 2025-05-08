@@ -3,7 +3,7 @@ use std::hash::poseidon2;
 
 
 // MAX_SOLUTION_WORDS is the maximum number of solution words that can be used in the proof.
-global MAX_SOLUTION_WORDS: u32 = 100;
+global MAX_SOLUTION_WORDS: u32 = 24;
 
 // Proves knowledge of the individual encoded solution words that hash to the public solution_root.
 // solution_words: Array of Field elements, each representing a hex-encoded solution word (private witness).
