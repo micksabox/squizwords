@@ -71,7 +71,7 @@ const Homepage: React.FC = () => {
                 </div> */}
               </li>
             ))}
-            <li className="border-4 border-dashed border-gray-300 p-4 rounded-lg hover:border-gray-400 text-center transition-colors duration-300 ease-in-out flex flex-col md:items-center justify-center min-h-[200px] cursor-pointer">
+            <li className="border-4 border-dashed border-gray-300 p-4 rounded-lg hover:border-gray-400 text-center transition-colors duration-300 ease-in-out flex flex-col md:items-center justify-center min-h-[200px]">
                 <span className="text-5xl text-gray-500 font-semibold micro-5-regular">PUZZLE BUILDER</span>
                 <p className="text-gray-700 mt-2">Want to build and share a puzzle for your community?</p>
                 <a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-gray-100 bg-black px-4 py-2 rounded-md mt-2">Contact</a>
