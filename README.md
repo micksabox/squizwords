@@ -1,4 +1,20 @@
-# Noir with Vite and Hardhat
+# squizwords
+
+![logo](./packages/squizword-vite/public/crossword_squid_template_7.png)
+
+An onchain crossword puzzle game with a zero-knowledge twist.
+
+Noirhack 2025 project submission. All work was completed during the 4-week hackathon.
+
+## Features:
+- Uses Noir zero-knowledge system to compute solution privately
+- Proof can be verified by third-parties without revealing secret inputs
+- So the crossword transforms from single-player to multiplayer
+
+## Setup
+- This is a monorepo with `Bun`. It has not been tested with other monorepo tools
+
+# Template Started with: Noir with Vite and Hardhat
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e4bd1ebc-6be1-4ed2-8be8-18f70382ae22/deploy-status)](https://app.netlify.com/sites/noir-vite-hardhat/deploys)
 
