@@ -119,7 +119,7 @@ const Homepage: React.FC = () => {
       {/* Brain Health Section */}
       <div className="bg-slate-50 p-6 mt-8">
         <h2 className="text-4xl micro-5-regular text-teal-700 font-bold mb-6 text-center">
-        🧠<br/>BRAIN HEALTH
+        🧠<br/>BRAIN TRAIN
         </h2>
         <p className="text-center text-gray-700 mb-8 text-lg">
           Engaging in puzzles like crosswords is linked to cognitive well-being.<br/> Here's some research supporting the benefits:
