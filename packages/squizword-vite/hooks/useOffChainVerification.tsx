@@ -7,12 +7,12 @@ import { UltraPlonkBackend } from '@aztec/bb.js';
 import { Noir } from '@noir-lang/noir_js';
 
 export function useOffChainVerification(
-  backend: UltraPlonkBackend,
+  backend: UltraPlonkBackend | undefined,
   noir?: Noir,
   proofData?: ProofData,
 ) {
   useEffect(() => {
-    if (!proofData || !noir) return;
+    if (!proofData || !noir || !backend) return;
 
     toast.promise(backend.verifyProof(proofData), {
       pending: 'Verifying proof off-chain',

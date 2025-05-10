@@ -8,9 +8,9 @@
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
+    "composite": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -22,7 +22,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "components"],
+  "include": ["src", "components", "hooks", "utils", "worker", "../mycrossword/lib"],
   "references": [
     { "path": "./tsconfig.node.json" },
     { "path": "./tsconfig.worker.json" }
