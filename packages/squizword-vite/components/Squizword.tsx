@@ -175,7 +175,10 @@ function Component() {
                 </Button>
                 <Drawer>
                   <DrawerTrigger asChild>
-                    <Button className="micro-5-regular text-4xl p-6" variant="outline">
+                    <Button
+                      className="micro-5-regular text-4xl p-6"
+                      variant={proofData ? 'default' : 'outline'}
+                    >
                       <AwardIcon className="w-16 h-16 inline-block" /> CLAIM
                     </Button>
                   </DrawerTrigger>
@@ -199,20 +202,7 @@ function Component() {
                         to...
                         <br />
                         <BlocksIcon className="w-8 h-8 inline-block my-2" />
-                        <br /> Are you a builder or community interested in integrating{' '}
-                        <b>squizwords solution claims</b> into your project?
-                        <br />
-                        <a
-                          href="https://x.com/squizwords"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          Contact on X <ExternalLink className="w-4 h-4 inline-block" />
-                        </a>
                       </DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
                       <Button
                         onClick={() => {
                           startVerification().then(
@@ -226,8 +216,10 @@ function Component() {
                           );
                         }}
                       >
-                        Verify Proof & Claim
+                        Verify on Starknet (Sepolia Testnet)
                       </Button>
+                    </DrawerHeader>
+                    <DrawerFooter>
                       <DrawerClose asChild>
                         <Button variant="outline">Close</Button>
                       </DrawerClose>
