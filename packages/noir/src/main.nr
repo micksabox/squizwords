@@ -1,6 +1,4 @@
-
 use std::hash::poseidon2;
-
 
 // MAX_SOLUTION_WORDS is the maximum number of solution words that can be used in the proof.
 global MAX_SOLUTION_WORDS: u32 = 24;
@@ -9,7 +7,6 @@ global MAX_SOLUTION_WORDS: u32 = 24;
 // solution_words: Array of Field elements, each representing a hex-encoded solution word (private witness).
 // solution_root: The expected root hash calculated off-chain (public input).
 fn main(solution_words: [Field; MAX_SOLUTION_WORDS], solution_root: pub Field) {
-
     let calculated_root = poseidon2::Poseidon2::hash(solution_words, solution_words.len());
 
     // 3. Assert that the calculated root hash matches the public input.
@@ -28,7 +25,8 @@ fn test_main() {
 
     // 2. Calculate the *expected* root hash using the *exact* same off-chain logic (TS)
     // Replace this placeholder with the actual pre-calculated hash:
-    let expected_root_hash = poseidon2::Poseidon2::hash(test_solution_words, test_solution_words.len()); // <-- REPLACE THIS PLACEHOLDER HASH
+    let expected_root_hash =
+        poseidon2::Poseidon2::hash(test_solution_words, test_solution_words.len()); // <-- REPLACE THIS PLACEHOLDER HASH
     // let expected_root_hash = 0xba8f42264a4cbb52c35ff0cbd298eb7433f411700e1d612a28dfbfe570c999d;
     println(expected_root_hash);
 

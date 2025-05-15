@@ -1,0 +1,3 @@
+export const STARKNET_ADDRESSES = {
+  Sepolia: '0x0325dda99a441de1a8a3f470dc4a3402475679a44d6fb3d19009e38c200c7f41',
+};

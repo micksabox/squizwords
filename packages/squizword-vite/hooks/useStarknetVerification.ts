@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-// import { Contract, Provider } from 'starknet';
-import { STARKNET_ADDRESSES } from '../utils/starknet_constants.js';
-import vkUrl from '../utils/vk.bin?url';
-import { getHonkCallData, getZKHonkCallData } from 'garaga';
+import { STARKNET_ADDRESSES } from '../utils/starknet/constants.js';
+import vkUrl from '../utils/starknet/vk.bin?url';
+import { getZKHonkCallData } from 'garaga';
 import { RpcProvider, Contract } from 'starknet';
-import { ABI } from '../utils/abi.js';
+import { ABI } from '../utils/starknet/abi.js';
 import { init } from 'garaga';
 import { ProofData } from '@noir-lang/types';
 
@@ -96,7 +95,7 @@ export function useStarknetVerification(proofData?: ProofData) {
       }
 
       await init();
-      const callData = getHonkCallData(
+      const callData = getZKHonkCallData(
         proofData.proof,
         flattenFieldsAsArray(proofData.publicInputs),
         vk as Uint8Array,
@@ -110,14 +109,14 @@ export function useStarknetVerification(proofData?: ProofData) {
       // Send transaction
       updateState(ProofState.SendingTransaction);
 
-      const provider = new RpcProvider({ nodeUrl: 'https://free-rpc.nethermind.io/sepolia-juno' });
+      const provider = new RpcProvider({ nodeUrl: 'http://localhost:5050/rpc' });
       // Contract address for the verifier contract on Sepolia
       const contractAddress = STARKNET_ADDRESSES.Sepolia;
 
       const verifierContract = new Contract(ABI, contractAddress, provider).typedv2(ABI);
 
       //   // Check verification
-      const res = await verifierContract.verify_ultra_keccak_honk_proof(callData.slice(2));
+      const res = await verifierContract.verify_ultra_keccak_zk_honk_proof(callData.slice(1));
       //   const res = await verifierContract.verify_ultra_keccak_honk_proof(callData.slice(1));
       console.log('res', res);
 
