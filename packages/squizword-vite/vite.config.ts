@@ -27,5 +27,8 @@ export default defineConfig({
   ssr: {
     // Ensure React is bundled for SSR/Worker, not externalized
     noExternal: ['react', 'react-dom']
+  },
+  optimizeDeps: {
+    exclude: ['@noir-lang/noirc_abi', '@noir-lang/acvm_js', '@aztec/bb.js', 'garaga']
   }
 });
