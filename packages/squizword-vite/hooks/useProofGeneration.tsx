@@ -30,7 +30,7 @@ export function useProofGeneration(inputs?: { [key: string]: string | string[] }
       error: 'Computing witness failed! Did you finish the puzzle and enter the correct solutions?',
     });
 
-    const data = await toast.promise(backend.generateProof(witness, { keccak: true }), {
+    const data = await toast.promise(backend.generateProof(witness, { keccakZK: true }), {
       pending: 'Generating proof',
       success: 'Proof generated',
       error: 'Error generating proof',
