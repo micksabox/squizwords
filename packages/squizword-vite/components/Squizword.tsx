@@ -39,7 +39,8 @@ import {
 import { useSquizwordsParty } from '../hooks/useSquizwordsParty.js';
 import { stringToHex } from 'viem';
 import { useCrosswordLoader } from '../hooks/useCrosswordLoader.js';
-import AddToHomeScreen from './AddToHomeScreen';
+import AddToHomeScreen from './AddToHomeScreen.jsx';
+import { useStarknetVerification } from '../hooks/useStarknetVerification.js';
 
 function playSound(soundFile: string) {
   const audio = new Audio(soundFile);
@@ -68,7 +69,11 @@ function Component() {
 
   const [circuitInput, setCircuitInput] = useState<Record<string, string | string[]> | undefined>();
   const { noir, proofData, backend } = useProofGeneration(circuitInput);
-  useOffChainVerification(backend!, noir, proofData);
+  useOffChainVerification(backend, noir, proofData);
+
+  const { proofState, startVerification } = useStarknetVerification(proofData);
+
+  console.log('starknet verification state', proofState);
 
   const [userGuesses, setUserGuesses] = useState<string[]>();
 
@@ -170,7 +175,10 @@ function Component() {
                 </Button>
                 <Drawer>
                   <DrawerTrigger asChild>
-                    <Button className="micro-5-regular text-4xl p-6" variant="outline">
+                    <Button
+                      className="micro-5-regular text-4xl p-6"
+                      variant={proofData ? 'default' : 'outline'}
+                    >
                       <AwardIcon className="w-16 h-16 inline-block" /> CLAIM
                     </Button>
                   </DrawerTrigger>
@@ -178,16 +186,50 @@ function Component() {
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">Solution Claim</DrawerTitle>
                       <DrawerDescription className="text-center">
-                        Your puzzle should be proved before continuing. Puzzle solutions are computed privately using <a href="https://noir-lang.org/" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Noir <ExternalLink className="w-4 h-4 inline-block" /></a>, so solutions stay hidden and the proof can be verified by a third-party. Keep the solutions secret, keep them safe. Revealing the answers would inflate the supply of claims. You never know what use they might be put to...
-                        <br/>
-                        <BlocksIcon className="w-8 h-8 inline-block my-2" /><br/> Are you a builder or community interested in integrating <b>squizwords solution claims</b> into your project?
-                        <br/><a href="https://x.com/squizwords" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Contact on X <ExternalLink className="w-4 h-4 inline-block" /></a>
+                        Your puzzle should be proved before continuing. Puzzle solutions are
+                        computed privately using{' '}
+                        <a
+                          href="https://noir-lang.org/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline"
+                        >
+                          Noir <ExternalLink className="w-4 h-4 inline-block" />
+                        </a>
+                        , so solutions stay hidden and the proof can be verified by a third-party.
+                        Keep the solutions secret, keep them safe. Revealing the answers would
+                        inflate the supply of claims. You never know what use they might be put
+                        to...
+                        <br />
+                        <BlocksIcon className="w-8 h-8 inline-block my-2" />
                       </DrawerDescription>
+                      <Button
+                        onClick={() => {
+                          startVerification().then(
+                            () => {
+                              console.log('starknet verification state', proofState);
+                            },
+                            error => {
+                              console.error('starknet verification error', error);
+                              toast.error('Error verifying proof');
+                            },
+                          );
+                        }}
+                      >
+                        Verify on Starknet (Sepolia)
+                      </Button>
+                      <div className="mt-4 text-center">
+                        <a
+                          href="https://sepolia.starkscan.co/contract/0x05c6f1e14f4165e2721f43262c697a8c7d11c11ca2f73b2f21f0c10065f15c60#overview"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline flex items-center justify-center gap-2"
+                        >
+                          View Verifier on Starkscan <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
                     </DrawerHeader>
                     <DrawerFooter>
-                      <Button onClick={() => {
-                        toast.info('Still working on this! Don\'t worry, your solutions are safe. Come back soon. Thank you for any and all support!');
-                      }}>Verify Proof & Claim</Button>
                       <DrawerClose asChild>
                         <Button variant="outline">Close</Button>
                       </DrawerClose>
@@ -209,21 +251,24 @@ function Component() {
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">
                         {connectionCount <= 1
-                          ? "Questing Solo?"
+                          ? 'Questing Solo?'
                           : connectionCount < 10
-                          ? "Fellowship of the Squiz!"
-                          : "Massive Raid!"}
+                            ? 'Fellowship of the Squiz!'
+                            : 'Massive Raid!'}
                       </DrawerTitle>
                       <DrawerDescription className="text-center">
                         {connectionCount <= 1
                           ? "It seems you're on a solo adventure! Don't be shy, share the challenge and gather your fellowship. More minds mean more fun!"
                           : connectionCount < 10
-                          ? `You're tackling this puzzle with ${connectionCount} fellow solver${
-                              connectionCount === 1 ? '' : 's'
-                            }. A cozy group with great odds of success!`
-                          : `Wow, ${connectionCount} players online! You're part of a huge collective effort. This puzzle is about to be conquered!`}
+                            ? `You're tackling this puzzle with ${connectionCount} fellow solver${
+                                connectionCount === 1 ? '' : 's'
+                              }. A cozy group with great odds of success!`
+                            : `Wow, ${connectionCount} players online! You're part of a huge collective effort. This puzzle is about to be conquered!`}
                         {connectionCount === 1 && (
-                          <Share2Icon className="w-5 h-5 inline-block ml-2" aria-label="Share icon" />
+                          <Share2Icon
+                            className="w-5 h-5 inline-block ml-2"
+                            aria-label="Share icon"
+                          />
                         )}
                       </DrawerDescription>
                     </DrawerHeader>
@@ -243,12 +288,12 @@ function Component() {
                   <DrawerContent className="max-w-2xl mx-auto">
                     <DrawerHeader>
                       <DrawerTitle className="text-2xl text-center">
-                      <img src={slingSquiz} alt="Sling Squiz" className="w-32 mx-auto" />
+                        <img src={slingSquiz} alt="Sling Squiz" className="w-32 mx-auto" />
                         It's dangerous to go alone! Use this.
                       </DrawerTitle>
                       <DrawerDescription className="text-center">
-                        Share a link to get help from your friends, or play together as a world-wide party.
-                        
+                        Share a link to get help from your friends, or play together as a world-wide
+                        party.
                       </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter>
@@ -298,7 +343,8 @@ function Component() {
                       </div>
                       <DrawerDescription className="text-center">
                         Compete to race against time and be the first solver!
-                        <br/>Check out the current champions:
+                        <br />
+                        Check out the current champions:
                         <br />
                         <br />
                         <ul className="list-none p-0 m-0 text-left mx-auto w-fit">
@@ -317,7 +363,8 @@ function Component() {
                     </DrawerFooter>
                   </DrawerContent>
                 </Drawer>
-              </div> {/* end of toolbar */}
+              </div>{' '}
+              {/* end of toolbar */}
             </div>
           </div>
         </div>
