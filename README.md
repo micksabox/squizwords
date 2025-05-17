@@ -7,11 +7,15 @@ An onchain crossword puzzle game with a zero-knowledge twist.
 Noirhack 2025 project submission. All work was completed during the 4-week hackathon.
 
 ## Features:
+
 - Uses Noir zero-knowledge system to compute solution privately
 - Proof can be verified by third-parties without revealing secret inputs
 - So the crossword transforms from single-player to multiplayer
+- Onchain verifier generated using Garaga deployed on Starknet Sepolia
+  [https://sepolia.starkscan.co/contract/0x05c6f1e14f4165e2721f43262c697a8c7d11c11ca2f73b2f21f0c10065f15c60](https://sepolia.starkscan.co/contract/0x05c6f1e14f4165e2721f43262c697a8c7d11c11ca2f73b2f21f0c10065f15c60)
 
 ## Setup
+
 - This is a monorepo with `Bun`. It has not been tested with other monorepo tools
 
 # Template Started with: Noir with Vite and Hardhat
@@ -68,7 +72,8 @@ You can run the [example test file](./test/index.test.ts) with
 bun run test
 ```
 
-This test shows the basic usage of Noir in a TypeScript Node.js environment. It also starts its own network and deploys the verifier contract.
+This test shows the basic usage of Noir in a TypeScript Node.js environment. It also starts its own
+network and deploys the verifier contract.
 
 If you want to test only `UltraHonk`, you can run:
 
@@ -104,8 +109,6 @@ Feel free to add more networks, as long as they're supported by `wagmi`
 - Have funds in these accounts
 - Add their configuration in the `networks` property in `hardhat.config.cts`
 - Use the name that wagmi expects (for example `ethereum` won't work, as `wagmi` calls it `mainnet`)
-
-
 
 Note: Support for path mappings
 https://hardhat.org/hardhat-runner/docs/guides/typescript#support-for-path-mappings
