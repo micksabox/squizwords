@@ -9,6 +9,7 @@ import { init } from 'garaga';
 import { ProofData } from '@noir-lang/types';
 
 import { flattenFieldsAsArray } from '../utils/proof.js';
+import { toast } from 'react-toastify';
 
 enum ProofState {
   Initial = 'Initial',
@@ -91,6 +92,7 @@ export function useStarknetVerification(proofData?: ProofData) {
       updateState(ProofState.PreparingCalldata);
 
       if (!proofData) {
+        toast.error('Proof is not computed yet');
         throw new Error('Proof data is undefined');
       }
 
@@ -109,16 +111,23 @@ export function useStarknetVerification(proofData?: ProofData) {
       // Send transaction
       updateState(ProofState.SendingTransaction);
 
-      const provider = new RpcProvider({ nodeUrl: 'http://localhost:5050/rpc' });
+      const provider = new RpcProvider({
+        nodeUrl:
+          'https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_8/IuWSxX8f0kkgAcTnCYxcJKtIesZBzD7c',
+      });
       // Contract address for the verifier contract on Sepolia
       const contractAddress = STARKNET_ADDRESSES.Sepolia;
 
       const verifierContract = new Contract(ABI, contractAddress, provider).typedv2(ABI);
 
-      //   // Check verification
-      const res = await verifierContract.verify_ultra_keccak_zk_honk_proof(callData.slice(1));
-      //   const res = await verifierContract.verify_ultra_keccak_honk_proof(callData.slice(1));
-      console.log('res', res);
+      // Note: unknown why calldata is sliced, that's how others do it. it works
+      const verification = verifierContract.verify_ultra_keccak_zk_honk_proof(callData.slice(1));
+
+      toast.promise(verification, {
+        pending: 'Verifying proof on Starknet Sepolia...',
+        success: 'Proof verified!',
+        error: 'Proof verification failed',
+      });
 
       updateState(ProofState.ProofVerified);
     } catch (error) {

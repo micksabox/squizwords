@@ -216,8 +216,18 @@ function Component() {
                           );
                         }}
                       >
-                        Verify on Starknet (Sepolia Testnet)
+                        Verify on Starknet (Sepolia)
                       </Button>
+                      <div className="mt-4 text-center">
+                        <a
+                          href="https://sepolia.starkscan.co/contract/0x05c6f1e14f4165e2721f43262c697a8c7d11c11ca2f73b2f21f0c10065f15c60#overview"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline flex items-center justify-center gap-2"
+                        >
+                          View Verifier on Starkscan <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
                     </DrawerHeader>
                     <DrawerFooter>
                       <DrawerClose asChild>
